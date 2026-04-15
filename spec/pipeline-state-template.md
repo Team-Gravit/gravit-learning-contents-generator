@@ -49,5 +49,3 @@ current_phase: 0
 - `current_phase`와 Checklist를 함께 본다. Checklist에서 ⏳·❌가 가장 이른 phase부터 재개.
 - **ID Baseline은 재사용하지 않는다.** Phase 2를 재실행해 fetch한다. (파이프라인 외부에서 DB가 변경됐을 수 있다.)
 - `status: COMPLETED`이면 같은 날짜로 재시작하지 말고 사용자에게 확인을 구한다.
-
-> **집행:** `skills/generate-learning-content` — Phase 1 초기화, 이후 phase별 업데이트, Phase 0 복구 파싱.

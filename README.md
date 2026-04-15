@@ -34,7 +34,7 @@
 
 **pipeline-state (`pipeline-state-{YYYY-MM-DD}.md`)**
 
-상태 파일의 고정 스키마는 `.claude/rules/pipeline-state-template.md`를 참조한다. Phase 1에서 skill이 템플릿을 복사해 초기화하고, 이후 phase에서 in-place로 갱신한다.
+상태 파일의 고정 스키마는 `spec/pipeline-state-template.md`를 참조한다. Phase 1에서 skill이 템플릿을 복사해 초기화하고, 이후 phase에서 in-place로 갱신한다.
 
 필드 요약:
 - `Meta` — target_units, max_retry_per_problem
@@ -89,81 +89,24 @@
 
 ---
 
-**검수 루브릭**
+**검수 루브릭 (요약)**
 
-| 항목 | 코드 | 적용 대상 | 설명 |
-| --- | --- | --- | --- |
-| **정답 정확성** | R1 | 객관식/주관식 | 리뷰어가 직접 풀어본 결과와 제시된 정답 일치 여부 |
-| **선지 변별력** | R2 | 객관식만 | 오답 선지의 그럴듯함 + 정답 선지의 유일성 |
-| **난이도 적절성** | R3 | 객관식/주관식 | 타겟층(CS 배경 취준생/학부생) 수준 적합도 |
-| **발문-본문 정합성** | R4 | 객관식/주관식 | 발문이 묻는 바와 본문 맥락의 자연스러움 |
-| **해설 충실도** | R5 | 객관식/주관식 | 정답 근거 + 오답 이유 설명의 학습 효과 |
+| 항목 | 코드 | 적용 대상 |
+| --- | --- | --- |
+| 정답 정확성 | R1 | 문제(객/주) |
+| 선지 변별력 | R2 | 문제(객) |
+| 난이도 적절성 | R3 | 문제(객/주) |
+| 발문-본문 정합성 | R4 | 문제(객/주) |
+| 해설 충실도 | R5 | 문제(객/주) |
+| 난이도 균형 | R6 | 레슨 |
 
----
+**판정 요약**
 
-**채점 기준**
+- 문제: PASS = R1 ≥ 4 AND 적용 항목 평균 ≥ 3.5 AND 최솟값 ≥ 3. 하나라도 어기면 REJECT.
+- 레슨: PASS = R6 ≥ 3. REJECT 시 기존 문제 보존 + 난이도만 조정.
+- 문제·레슨 모두 재시도 최대 3회, 초과 시 `manual-review` 태깅.
 
-```
-R1. 정답 정확성
-  5: 풀이 결과와 제시된 정답 완전 일치, 해설 논리도 정확
-  4: 정답 일치, 해설에 사소한 표현 부정확 (오개념 아님)
-  3: 정답 일치, 해설 논리에 빈약한 부분 존재
-  2: 정답이 모호하거나 특정 해석에서만 성립
-  1: 정답이 명백히 오류
-
-R2. 선지 변별력 (객관식만)
-  5: 오답 선지 모두 그럴듯하되 명확한 오개념 기반, 정답이 유일
-  4: 대부분 적절, 1개가 너무 쉽게 소거됨
-  3: 2개 이상이 명백히 틀려 소거법으로 쉽게 풀림
-  2: 복수정답 가능 선지 존재
-  1: 선지 구성 무의미 또는 정답 선지 오류
-
-R3. 난이도 적절성
-  5: 개념 이해 + 약간의 응용 필요, 타겟층에 최적
-  4: 적절하나 약간 쉽거나 어려움
-  3: 단순 암기로 풀리거나 상위 10%만 풀 수 있는 수준
-  2: 지나치게 쉬움(정의만) 또는 지나치게 어려움(대학원 수준)
-  1: 타겟층과 완전 불일치
-
-R4. 발문-본문 정합성
-  5: 발문과 본문이 완벽히 일치, 자연스러운 문장
-  4: 정합하나 사소한 어색함 (조사, 어미 등)
-  3: 이해 가능하나 연결이 느슨
-  2: 발문이 모호하여 의도 파악 어려움
-  1: 발문과 본문이 논리적으로 불일치
-
-R5. 해설 충실도
-  5: 왜 정답인지/왜 오답인지 핵심 개념으로 설명, 학습 효과 높음
-  4: 정답 근거 충실, 오답 해설 다소 부족
-  3: 해설이 피상적 ("~이므로 정답이다" 수준)
-  2: 핵심 개념 언급 없이 결론만 제시
-  1: 해설 누락 또는 오개념 포함
-```
-
----
-
-**판정 기준과 REJECT 시 반환 형식**
-
-```
-PASS 조건 (모두 충족):
-  - R1 ≥ 4
-  - 전 항목 평균 ≥ 3.5
-  - 어떤 항목도 2 이하가 아닐 것
-  - 주관식: R2 제외, 나머지 4개 항목으로 판정
-
-REJECT 조건 (하나라도 해당 시):
-  - R1 ≤ 2 → 즉시 REJECT
-  - 어떤 항목이든 1점 → 즉시 REJECT
-  - 전 항목 평균 < 3.5
-  
-REJECT 시 반환 형식
-- problem_id: 문제 임시 ID
-- verdict: REJECT
-- scores: { R1~R5 점수 }
-- avg: 평균
-- reject_reasons: 감점 항목별 구체적 사유
-- improvement_direction: 개선 방향 (generator가 참조)
-```
+채점 척도(정수 1~5), 각 항목 세부 기준, 출력 스키마, R1 판정 프로토콜은 [`spec/review-rubric.md`](spec/review-rubric.md) 참조.
 
 ---
 
@@ -272,17 +215,10 @@ CS 도메인 맥락을 고려한 오탈자/문법 검출
 ```
 프로젝트 루트/
 ├── .claude/
-│   ├── CLAUDE.md                              ← 항상 로드되는 최소 지침 (pipeline-state 경로, rules 인덱스)
+│   ├── CLAUDE.md                              ← 항상 로드되는 최소 지침 (pipeline-state 경로, spec 인덱스)
 │   ├── agents/
 │   │   ├── learning-content-generator.md      ← 콘텐츠 생성 서브에이전트 (context: fork)
 │   │   └── learning-content-reviewer.md       ← 콘텐츠 검수 서브에이전트 (context: fork, read-only)
-│   ├── rules/                                 ← spec 문서 (skill·agent·hook이 필요 시점에 Read)
-│   │   ├── learning-content-rules.md          ← 콘텐츠 구성 규칙
-│   │   ├── learning-content-sql-schema.md     ← DB 테이블 스키마
-│   │   ├── learning-content-sql-template.md   ← INSERT 쿼리 템플릿
-│   │   ├── id-management-rule.md              ← ID 발번 규칙
-│   │   ├── pipeline-state-template.md         ← pipeline-state 파일 스키마
-│   │   └── review-rubric.md                   ← 검수 루브릭 (R1~R5 채점 기준)
 │   ├── skills/
 │   │   ├── generate-learning-content/
 │   │   │   ├── SKILL.md                       ← 진입점 스킬 (Phase 0~6 오케스트레이션)
@@ -301,6 +237,14 @@ CS 도메인 맥락을 고려한 오탈자/문법 검출
 │   │   ├── typo-checker                       ← PostToolUse: CS 도메인 오탈자 검출
 │   │   └── notify-complete.sh                 ← Stop: Webhook 알림
 │   └── settings.local.json
+│
+├── spec/                                      ← SoT spec 문서 (`.claude/` 밖에 두어 자동 로드 회피)
+│   ├── learning-content-rules.md              ← 콘텐츠 구성 규칙
+│   ├── learning-content-sql-schema.md         ← DB 테이블 스키마
+│   ├── learning-content-sql-template.md       ← INSERT 쿼리 템플릿
+│   ├── id-management.md                       ← ID 발번 규칙
+│   ├── pipeline-state-template.md             ← pipeline-state 파일 스키마
+│   └── review-rubric.md                       ← 검수 루브릭 (R1~R6 채점 기준)
 │
 └── pipeline-workspace/
     ├── pipeline-state-{YYYY-MM-DD}.md         ← 파이프라인 상태 추적 파일

@@ -10,19 +10,19 @@ Gravit CS 학습 콘텐츠(lesson / problem / option / answer) 자동 생성 파
 ## Pipeline State
 
 - **위치:** `pipeline-workspace/pipeline-state-{YYYY-MM-DD}.md`
-- **스키마:** `.claude/rules/pipeline-state-template.md`
+- **스키마:** `spec/pipeline-state-template.md`
 
 **복구 규칙 (compaction / 세션 재시작 시):** 오늘 날짜의 pipeline-state 파일이 있으면 먼저 Read하고, Checklist에서 미완료인 가장 이른 phase부터 재개한다. 파일이 없으면 skill을 새로 시작한다.
 
 ---
 
-## Rules 인덱스
+## Spec 인덱스
 
-각 rule은 spec 문서다. skill / agent / hook이 **필요 시점에 Read로 로드**한다. 자동 로드(`@` 참조)하지 않는다.
+각 spec은 SoT 문서로 `spec/` 하위에 있다. `.claude/` 바깥에 두어 자동 로드를 피한다. skill / agent / hook이 **필요 시점에 Read로 로드**한다.
 
-- `.claude/rules/learning-content-rules.md` — 콘텐츠 구성 규칙
-- `.claude/rules/learning-content-sql-schema.md` — DB 테이블 스키마
-- `.claude/rules/learning-content-sql-template.md` — INSERT 쿼리 템플릿
-- `.claude/rules/id-management-rule.md` — ID 발번 규칙
-- `.claude/rules/pipeline-state-template.md` — pipeline-state 파일 스키마
-- `.claude/rules/review-rubric.md` — R1~R5 검수 루브릭
+- `spec/learning-content-rules.md` — 콘텐츠 구성 규칙
+- `spec/learning-content-sql-schema.md` — DB 테이블 스키마
+- `spec/learning-content-sql-template.md` — INSERT 쿼리 템플릿
+- `spec/id-management.md` — ID 발번 규칙
+- `spec/pipeline-state-template.md` — pipeline-state 파일 스키마
+- `spec/review-rubric.md` — R1~R6 검수 루브릭
