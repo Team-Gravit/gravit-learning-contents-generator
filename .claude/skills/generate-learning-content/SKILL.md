@@ -36,5 +36,5 @@ Gravit CS 학습 콘텐츠 1 lesson(OBJECTIVE 4 + SUBJECTIVE 2 = 6문제) 생성
 ## 디렉토리
 
 - `phases/` — phase별 절차 문서 (이 파일의 "진입 지시" 참고)
-- `templates/` — generator에서 쓰는 few-shot 예시
-  - `problem-examples.md`
+
+> generator few-shot 예시(`problem-examples.md`)를 포함한 모든 SoT 문서는 `.claude/spec/` 아래에 있다. `learning-content-generator` 에이전트가 직접 Read한다.

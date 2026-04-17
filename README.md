@@ -16,8 +16,9 @@
 - 파이프라인의 상태를 추적, 관리한다. 에이전트들의 진행도, 재시도 횟수 등을 `pipeline-state-{날짜}.md`파일로 관리한다.
 - 콘텐츠 생성에 필요한 **개념노트**, **기존 문제**(중복 방지)를 가져와 `콘텐츠 생성 에이전트`에 분배한다.
 - `콘텐츠 생성 에이전트`가 만든 콘텐츠를 `콘텐츠 검수 에이전트`에게 전달하고, 그 결과를 통해 **재시도 여부(1문제당 최대 3회)를 결정**한다.
-- 최종 결과물을 모아 백오피스로 반환한다.
-- **compaction** 또는 세션 교체 시 `pipeline-state-{날짜}.md`를 읽어 중단된 단계부터 재개한다.
+- 재시도 3회 초과분(`manual-review`)은 **사용자와 대화로 해소**한다.
+- 최종 산출물(`lesson.sql`)을 운영 DB의 `_staging` 테이블에 적재한다.
+- **compaction** 또는 세션 교체 시 `pipeline-state-{날짜}.md`를 읽어 중단된 단계부터 재개한다. 재개 시 `fetch-max-id`로 ID Baseline만 재조회하고 fetch-cache는 재사용한다.
 
 ---
 
@@ -26,9 +27,10 @@
 - `fetch-cs-note` 스킬로 작업 유닛들의 **개념노트**를 가져온다.
 - `fetch-existing-learning-contents` 스킬로 작업 유닛들의 **기존 문제 목록**을 가져온다.
 - 위 작업의 결과를 유닛별로 할당된 `콘텐츠 생성 에이전트`에게 분배한다.
-- 위 작업의 결과를 유닛별로 할당된 `콘텐츠 검수 에이전트`에게 분배한다.
+- 생성 결과물을 유닛별로 할당된 `콘텐츠 검수 에이전트`에게 분배한다.
 - 검수 결과를 종합하여 수정이 필요한 부분에 대해 **재생성을 지시**한다.
-- 모든 작업 완료 시, `build-staging-output` 스킬로 작업물의 **JSON**과 **SQL 쿼리**를 준비한다.
+- 미해소 항목은 사용자와 대화로 수정안을 합의한 뒤 `lesson.sql`에 반영한다.
+- 모든 작업 완료 시, `.env`의 `DATABASE_URL`로 `psql` 실행하여 `_staging` 테이블에 적재한다.
 
 ---
 
@@ -114,7 +116,7 @@
 
 **⚒️ generate-learning-content**
 
-Phase 기반 절차 지향 오케스트레이션을 통해 문제 생성 → 검수 → 피드백 루프 → 최종 빌드까지 파이프라인 전체를 실행하는 진입점 스킬이다.
+Phase 0~7의 절차 지향 오케스트레이션을 통해 복구 → 계획 → 데이터 수집 → 생성 → 검수 → 피드백 루프 → manual-review → staging 적재까지 파이프라인 전체를 실행하는 진입점 스킬이다.
 
 <br>
 
@@ -126,13 +128,13 @@ Phase 기반 절차 지향 오케스트레이션을 통해 문제 생성 → 검
 
 **⚒️ fetch-existing-learning-contents**
 
-특정 유닛의 학습 컨텐츠 목록을 조회한다. 유닛의 식별자로 하위 레슨을 조회한 뒤, 레슨별 학습 컨텐츠를 가져온다
+특정 유닛의 학습 컨텐츠 목록을 조회한다. 유닛의 식별자로 하위 레슨을 조회한 뒤, 레슨별 학습 컨텐츠를 가져온다.
 
 <br>
 
-**⚒️ build-staging-output**
+**⚒️ fetch-max-id**
 
-검수를 통과한 문제 SQL를 백오피스가 소비할 수 있는 형태로 가공한다. 백오피스 UI용 JSON과 최종 승인 시 실행할 SQL 쿼리문을 종합한다.
+lesson / problem / option / answer 테이블의 MAX ID를 조회한다. Phase 2에서 ID Baseline 확정 시, Phase 0 복구 시에 호출된다.
 
 ---
 
@@ -140,7 +142,7 @@ Phase 기반 절차 지향 오케스트레이션을 통해 문제 생성 → 검
 
 **🔗 learning-content-formatter**
 
-JSON 키 배치, SQL 컬럼 구성, 문제 수/선지 수/정답 개수 등 구조적 유효성 검증 (fail-closed)
+SQL 컬럼 구성, 문제 수/선지 수/정답 개수 등 구조적 유효성 검증 (fail-closed)
 
 <br>
 
@@ -160,6 +162,8 @@ CS 도메인 맥락을 고려한 오탈자/문법 검출
 
 작업 완료시 Webhook 알림
 
+> 현재 4개 훅은 스텁 상태다. 상위 3개(formatter / validator / typo-checker)는 모델 판단이 필요한 단계라 skill 절차 또는 reviewer 에이전트로 흡수할지 논의 중이다. `notify-complete`만은 Stop 이벤트 훅으로 유지.
+
 ---
 
 ### 📌 파이프라인 구조
@@ -167,42 +171,49 @@ CS 도메인 맥락을 고려한 오탈자/문법 검출
 ```
 [/generate-learning-content {unit_ids} 호출]
     │
-    ├─ Phase 0. 복구 확인
-    │   └─ pipeline-state-{날짜}.md 존재 시 → 중단 지점부터 재개
+    ├─ Phase 0. 복구 확인 (메인 세션)
+    │   ├─ pipeline-state-{날짜}.md 없음 → Phase 1
+    │   └─ 있음 → Checklist에서 미완료 가장 이른 phase를 resume_phase로 결정
+    │       └─ resume_phase > 2 → fetch-max-id만 재호출해 ID Baseline 갱신
+    │          (concept-note / existing-problems 캐시는 재사용)
     │
     ├─ Phase 1. 계획 수립 (메인 세션)
-    │   ├─ 유닛 ID 파싱, 하위 Lesson 조회
+    │   ├─ 유닛 ID 파싱
     │   └─ pipeline-state-{날짜}.md 생성 (Meta + Checklist 초기화)
     │
     ├─ Phase 2. 데이터 수집 (메인 세션)
-    │   ├─ /fetch-cs-note → 개념노트 확보
-    │   ├─ /fetch-existing-learning-contents → 기존 학습 컨텐츠 목록 확보
+    │   ├─ /fetch-cs-note → concept-note.md
+    │   ├─ /fetch-existing-learning-contents → existing-problems.md
+    │   ├─ fetch-max-id → ID Baseline 확정
     │   └─ pipeline-state 업데이트
     │
     ├─ Phase 3. 콘텐츠 생성 (서브에이전트 병렬, context: fork)
-    │   ├─ [Unit A] learning-content-generator → 1 lesson (6문제) 생성
-    │   ├─ [Unit B] learning-content-generator → 1 lesson (6문제) 생성
-    │   └─ [Unit C] learning-content-generator → 1 lesson (6문제) 생성
-    │   └─ [Hook: learning-content-formatter] 구조 검증
-    │   └─ [Hook: typo-checker] 오탈자 검출
-    │   └─ pipeline-state 업데이트
+    │   ├─ [재실행 가드] 기존 lesson.sql 존재 시 [덮어쓰기 / 보존 후 skip] 확인
+    │   ├─ [Unit A] learning-content-generator → lesson.sql (1 lesson, 6문제)
+    │   ├─ [Unit B] learning-content-generator → lesson.sql
+    │   └─ ...
     │
     ├─ Phase 4. 콘텐츠 검수 (서브에이전트 병렬, context: fork, read-only)
-    │   ├─ 각 문제를 직접 풀어 정답 검증
-    │   ├─ 검수 루브릭(R1~R5) 항목별 1~5점 채점
-    │   ├─ PASS/REJECT 판정
-    │   └─ pipeline-state 업데이트
+    │   ├─ [재실행 가드] 기존 review.md 존재 시 [덮어쓰기 / 보존 후 skip] 확인
+    │   ├─ learning-content-reviewer → 각 문제 직접 풀이
+    │   ├─ R1~R6 항목별 1~5점 채점 → PASS/REJECT 판정 → review.md
+    │   ├─ 모두 PASS → ☞ Phase 7 (5·6 건너뜀)
+    │   └─ 하나라도 REJECT → Phase 5
     │
-    ├─ Phase 5. 피드백 루프 (1문제당 최대 3회)
-    │   ├─ REJECT 문제 + 감점항목 + 개선방향 → learning-content-generator 재호출
-    │   ├─ 재생성 → Phase 4 재검수 반복
-    │   ├─ 3회 초과 시 manual-review 표기
-    │   └─ pipeline-state 업데이트
+    ├─ Phase 5. 피드백 루프 (문제당 최대 3회)
+    │   ├─ REJECT 문제 + 감점항목 + 개선방향 → generator 재호출 → reviewer 재채점
+    │   ├─ 3회 초과 시 lesson.sql에 -- manual-review 주석 태깅
+    │   │                + pipeline-state의 Manual Review에 요약 기록
+    │   ├─ Manual Review 항목 있음 → Phase 6
+    │   └─ Manual Review 비어있음 → ☞ Phase 7 (6 건너뜀)
     │
-    ├─ Phase 6. 최종 빌드
-    │   ├─ /build-staging-output → JSON + INSERT 쿼리 생성
-    │   ├─ {날짜}-update-unit-{id}.json
-    │   ├─ {날짜}-update-unit-{id}.sql
+    ├─ Phase 6. manual-review 해소 (사용자 대화)
+    │   ├─ 태깅된 항목별 수정안 제시 → OK 응답 시 lesson.sql 반영
+    │   └─ 모두 해소되면 Manual Review 비움
+    │
+    ├─ Phase 7. staging 적재
+    │   ├─ .env의 DATABASE_URL 로드
+    │   ├─ psql --single-transaction -f lesson.sql → _staging 테이블
     │   └─ pipeline-state 최종 상태: COMPLETED
     │
     └─ [Hook: notify-complete] Webhook 알림
@@ -221,15 +232,19 @@ CS 도메인 맥락을 고려한 오탈자/문법 검출
 │   │   └── learning-content-reviewer.md       ← 콘텐츠 검수 서브에이전트 (context: fork, read-only)
 │   ├── skills/
 │   │   ├── generate-learning-content/
-│   │   │   ├── SKILL.md                       ← 진입점 스킬 (Phase 0~6 오케스트레이션)
-│   │   │   └── templates/
-│   │   │       ├── json-template.md           ← 최종 JSON 출력 스키마
-│   │   │       └── problem-examples.md        ← generator용 few-shot 예시
+│   │   │   ├── SKILL.md                       ← 진입점 스킬 (Phase 0~7 오케스트레이션)
+│   │   │   └── phases/                        ← phase별 절차 runbook
+│   │   │       ├── phase-0-recovery.md
+│   │   │       ├── phase-1-planning.md
+│   │   │       ├── phase-2-fetch.md
+│   │   │       ├── phase-3-generate.md
+│   │   │       ├── phase-4-review.md
+│   │   │       ├── phase-5-feedback-loop.md
+│   │   │       ├── phase-6-manual-review.md
+│   │   │       └── phase-7-staging-load.md
 │   │   ├── fetch-cs-note/
 │   │   │   └── SKILL.md
-│   │   ├── fetch-existing-learning-contents/
-│   │   │   └── SKILL.md
-│   │   └── build-staging-output/
+│   │   └── fetch-existing-learning-contents/
 │   │       └── SKILL.md
 │   ├── hooks/
 │   │   ├── learning-content-formatter.sh      ← PreToolUse: JSON/SQL 구조·count 검증
@@ -240,6 +255,7 @@ CS 도메인 맥락을 고려한 오탈자/문법 검출
 │   │   ├── learning-content-rules.md          ← 콘텐츠 구성 규칙
 │   │   ├── learning-content-sql-schema.md     ← DB 테이블 스키마 (prod + _staging)
 │   │   ├── learning-content-sql-template.md   ← INSERT 쿼리 템플릿
+│   │   ├── problem-examples.md                ← generator few-shot 예시
 │   │   ├── id-management.md                   ← ID 발번 규칙
 │   │   ├── pipeline-state-template.md         ← pipeline-state 파일 스키마
 │   │   ├── review-rubric.md                   ← 검수 루브릭 (R1~R6 채점 기준)
@@ -248,7 +264,11 @@ CS 도메인 맥락을 고려한 오탈자/문법 검출
 │
 └── pipeline-workspace/
     ├── pipeline-state-{YYYY-MM-DD}.md         ← 파이프라인 상태 추적 파일
-    └── output/
-        ├── {날짜}-update-unit-{id}.json        ← 백오피스 UI용 JSON
-        └── {날짜}-update-unit-{id}.sql         ← 최종 승인용 INSERT 쿼리
+    ├── fetch-cache/{YYYY-MM-DD}/{unit_id}/
+    │   ├── concept-note.md                    ← Phase 2: fetch-cs-note 산출물
+    │   └── existing-problems.md               ← Phase 2: fetch-existing-learning-contents 산출물
+    ├── generation-output/{YYYY-MM-DD}/{unit_id}/
+    │   └── lesson.sql                         ← Phase 3/5/6: generator + manual-review 최종 SQL
+    └── review-output/{YYYY-MM-DD}/{unit_id}/
+        └── review.md                          ← Phase 4/5: reviewer 채점 결과
 ```

@@ -23,6 +23,7 @@ Gravit CS 학습 콘텐츠(lesson / problem / option / answer) 자동 생성 파
 - `.claude/spec/learning-content-rules.md` — 콘텐츠 구성 규칙
 - `.claude/spec/learning-content-sql-schema.md` — DB 테이블 스키마 (prod + `_staging`)
 - `.claude/spec/learning-content-sql-template.md` — INSERT 쿼리 템플릿
+- `.claude/spec/problem-examples.md` — generator few-shot 예시
 - `.claude/spec/id-management.md` — ID 발번 규칙
 - `.claude/spec/pipeline-state-template.md` — pipeline-state 파일 스키마
 - `.claude/spec/review-rubric.md` — R1~R6 검수 루브릭
