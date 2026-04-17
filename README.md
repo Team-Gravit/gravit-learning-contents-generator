@@ -34,7 +34,7 @@
 
 **pipeline-state (`pipeline-state-{YYYY-MM-DD}.md`)**
 
-상태 파일의 고정 스키마는 `spec/pipeline-state-template.md`를 참조한다. Phase 1에서 skill이 템플릿을 복사해 초기화하고, 이후 phase에서 in-place로 갱신한다.
+상태 파일의 고정 스키마는 `.claude/spec/pipeline-state-template.md`를 참조한다. Phase 1에서 skill이 템플릿을 복사해 초기화하고, 이후 phase에서 in-place로 갱신한다.
 
 필드 요약:
 - `Meta` — target_units, max_retry_per_problem
@@ -106,7 +106,7 @@
 - 레슨: PASS = R6 ≥ 3. REJECT 시 기존 문제 보존 + 난이도만 조정.
 - 문제·레슨 모두 재시도 최대 3회, 초과 시 `manual-review` 태깅.
 
-채점 척도(정수 1~5), 각 항목 세부 기준, 출력 스키마, R1 판정 프로토콜은 [`spec/review-rubric.md`](spec/review-rubric.md) 참조.
+채점 척도(정수 1~5), 각 항목 세부 기준, 출력 스키마, R1 판정 프로토콜은 [`.claude/spec/review-rubric.md`](.claude/spec/review-rubric.md) 참조.
 
 ---
 
@@ -236,15 +236,15 @@ CS 도메인 맥락을 고려한 오탈자/문법 검출
 │   │   ├── sql-validator.sh                   ← PreToolUse: INSERT 쿼리 무결성
 │   │   ├── typo-checker                       ← PostToolUse: CS 도메인 오탈자 검출
 │   │   └── notify-complete.sh                 ← Stop: Webhook 알림
+│   ├── spec/                                  ← SoT spec 문서 (skill/agent가 필요 시점에 Read)
+│   │   ├── learning-content-rules.md          ← 콘텐츠 구성 규칙
+│   │   ├── learning-content-sql-schema.md     ← DB 테이블 스키마 (prod + _staging)
+│   │   ├── learning-content-sql-template.md   ← INSERT 쿼리 템플릿
+│   │   ├── id-management.md                   ← ID 발번 규칙
+│   │   ├── pipeline-state-template.md         ← pipeline-state 파일 스키마
+│   │   ├── review-rubric.md                   ← 검수 루브릭 (R1~R6 채점 기준)
+│   │   └── review-template.md                 ← 검수 출력 템플릿
 │   └── settings.local.json
-│
-├── spec/                                      ← SoT spec 문서 (`.claude/` 밖에 두어 자동 로드 회피)
-│   ├── learning-content-rules.md              ← 콘텐츠 구성 규칙
-│   ├── learning-content-sql-schema.md         ← DB 테이블 스키마
-│   ├── learning-content-sql-template.md       ← INSERT 쿼리 템플릿
-│   ├── id-management.md                       ← ID 발번 규칙
-│   ├── pipeline-state-template.md             ← pipeline-state 파일 스키마
-│   └── review-rubric.md                       ← 검수 루브릭 (R1~R6 채점 기준)
 │
 └── pipeline-workspace/
     ├── pipeline-state-{YYYY-MM-DD}.md         ← 파이프라인 상태 추적 파일

@@ -1,12 +1,12 @@
-# pipeline-state 파일 스키마
+## pipeline-state 파일 스키마
 
-`pipeline-workspace/pipeline-state-{YYYY-MM-DD}.md`는 아래 고정 구조를 따른다. skill이 Phase 1에서 이 템플릿을 복사해 초기화하고, 이후 phase에서 in-place로 업데이트한다.
+`pipeline-workspace/pipeline-state-{YYYY-MM-DD}.md`는 아래 고정 구조를 따른다.
 
 복구(Phase 0)는 이 스키마에 의존하므로 필드 추가·삭제 시 복구 로직도 함께 갱신하라.
 
 ---
 
-## 템플릿
+### 템플릿
 
 ````markdown
 ---
@@ -26,9 +26,9 @@ current_phase: 0
 - last_answer_id: {n}
 
 ## Checklist
-| unit_id | phase_2 | phase_3 | phase_4 | phase_5 | phase_6 |
-|---------|---------|---------|---------|---------|---------|
-| {id}    | ⏳       | ⏳       | ⏳       | ⏳       | ⏳       |
+| unit_id | phase_2 | phase_3 | phase_4 | phase_5 | phase_6 | phase_7 |
+|---------|---------|---------|---------|---------|---------|---------|
+| {id}    | ⏳      | ⏳      | ⏳       | ⏳      | ⏳      | ⏳      |
 
 ## Manual Review
 - {unit_id}/{problem_ref}: 재시도 3회 초과 — {마지막 감점 요약}
@@ -39,13 +39,11 @@ current_phase: 0
 
 ---
 
-## 상태 기호
+### 상태 기호
 - ✅ 완료
 - ⏳ 진행 중 / 예정
 - ❌ 실패
 - ⏭ 건너뜀 (manual-review 등)
 
-## 복구 판단
-- `current_phase`와 Checklist를 함께 본다. Checklist에서 ⏳·❌가 가장 이른 phase부터 재개.
-- **ID Baseline은 재사용하지 않는다.** Phase 2를 재실행해 fetch한다. (파이프라인 외부에서 DB가 변경됐을 수 있다.)
+### 복구 판단
 - `status: COMPLETED`이면 같은 날짜로 재시작하지 말고 사용자에게 확인을 구한다.

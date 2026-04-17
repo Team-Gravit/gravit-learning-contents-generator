@@ -9,7 +9,7 @@
 - **문제 단위 (R1~R5):** 생성된 각 문제에 대해 채점. 문제별 PASS/REJECT 판정.
 - **레슨 단위 (R6):** 6문제 전체를 묶어 난이도 균형을 1회 채점. 레슨별 PASS/REJECT 판정.
 
-"개념 편중 방지"는 **generator 생성 단계의 제약**으로 처리한다(루브릭 항목이 아님). `spec/learning-content-rules.md` 참조.
+"개념 편중 방지"는 **generator 생성 단계의 제약**으로 처리한다(루브릭 항목이 아님). `.claude/spec/learning-content-rules.md` 참조.
 
 ---
 
@@ -102,47 +102,9 @@ REJECT (PASS 부정, 아래 중 하나라도 해당):
 
 ---
 
-## 출력 스키마
+## 출력 형식
 
-```json
-{
-  "lesson": {
-    "R6": 4,
-    "verdict": "PASS",
-    "reject_reason": null,
-    "improvement_direction": null
-  },
-  "problems": [
-    {
-      "problem_ref": "p1",
-      "problem_type": "OBJECTIVE",
-      "scores": { "R1": 5, "R2": 4, "R3": 4, "R4": 5, "R5": 4 },
-      "avg": 4.4,
-      "verdict": "PASS",
-      "reject_reasons": null,
-      "improvement_direction": null
-    },
-    {
-      "problem_ref": "p5",
-      "problem_type": "SUBJECTIVE",
-      "scores": { "R1": 4, "R3": 2, "R4": 4, "R5": 3 },
-      "avg": 3.25,
-      "verdict": "REJECT",
-      "reject_reasons": {
-        "R3": "단순 용어 정의 수준으로 타겟층 대비 지나치게 쉬움",
-        "avg": "평균 3.25로 기준(3.5) 미달"
-      },
-      "improvement_direction": {
-        "R3": "개념 정의뿐 아니라 상황 적용을 묻도록 본문에 구체적 시나리오 추가"
-      }
-    }
-  ]
-}
-```
-
-- `reject_reasons`·`improvement_direction`은 **항목별 구조화 객체**. generator 재호출 시 프롬프트에 항목별로 삽입 가능해야 한다.
-- 평균 기준 미달 같은 **합산 사유**는 `avg` 키에 담는다.
-- PASS 문제는 `reject_reasons`·`improvement_direction`을 `null`로 둔다.
+`.claude/spec/review-template.md` 참조.
 
 ---
 
