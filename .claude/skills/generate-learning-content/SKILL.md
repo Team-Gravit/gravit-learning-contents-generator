@@ -6,7 +6,7 @@ allowed-tools: Read, Write, Edit, Glob, Bash, Task, Skill
 
 # generate-learning-content
 
-Gravit CS 학습 콘텐츠 1 lesson(OBJECTIVE 4 + SUBJECTIVE 2 = 6문제) 생성 파이프라인의 진입점 스킬. Phase 0부터 순차 실행한다.
+Gravit CS 학습 콘텐츠 생성 파이프라인의 진입점 스킬. Phase 0부터 순차 실행한다.
 
 ## 진입 지시
 
@@ -36,5 +36,3 @@ Gravit CS 학습 콘텐츠 1 lesson(OBJECTIVE 4 + SUBJECTIVE 2 = 6문제) 생성
 ## 디렉토리
 
 - `phases/` — phase별 절차 문서 (이 파일의 "진입 지시" 참고)
-
-> generator few-shot 예시(`problem-examples.md`)를 포함한 모든 SoT 문서는 `.claude/spec/` 아래에 있다. `learning-content-generator` 에이전트가 직접 Read한다.

@@ -18,7 +18,7 @@ Gravit CS 학습 콘텐츠(lesson / problem / option / answer) 자동 생성 파
 
 ## Spec 인덱스
 
-각 spec은 SoT 문서로 `.claude/spec/` 하위에 있다. skill / agent / hook이 **필요 시점에 Read로 로드**한다.
+각 스펙은 SoT 문서로 `.claude/spec/` 하위에 있다. skill / agent / hook이 **필요 시점에 Read로 로드**한다.
 
 - `.claude/spec/learning-content-rules.md` — 콘텐츠 구성 규칙
 - `.claude/spec/learning-content-sql-schema.md` — DB 테이블 스키마 (prod + `_staging`)

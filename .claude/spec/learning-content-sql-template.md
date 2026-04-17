@@ -6,7 +6,7 @@ description: 학습 콘텐츠 INSERT SQL 쿼리 작성 템플릿 및 순서. 파
 
 ## 쿼리 작성 순서
 
-`lesson_staging` → `problem_staging` → `option_staging` (OBJECTIVE) → `answer_staging` (SUBJECTIVE) 순서로 작성하라. 같은 lesson의 option은 하나의 INSERT VALUES 블록으로 묶어라.
+`lesson_staging` → `problem_staging` → `option_staging` (OBJECTIVE) → `answer_staging` (SUBJECTIVE) 순서로 작성하라.
 
 `{label}`은 pipeline-state 헤더 `date` 값 기반 `YYYY-MM-DD-update` 고정 포맷이다 (예: `2026-04-16-update`).
 
