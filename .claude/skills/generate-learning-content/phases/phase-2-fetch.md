@@ -13,7 +13,7 @@ Phase 1에서 작성한 `pipeline-state` 파일이 존재하며, 파일 내의 `
 
 ### 절차
 1. `pipeline-state` 파일의 `Meta.target_units`의 각 유닛에 대해 `fetch-cs-note`를 호출하여, 그 결과를 `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md`로 작성한다.
-2. `pipeline-state` 파일의 `Meta.target_units`의 각 유닛에 대해 `fetch-existing-learning-contents`를 호출하여, 그 결과를 `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.md`로 작성한다.
+2. `pipeline-state` 파일의 `Meta.target_units`의 각 유닛에 대해 `fetch-existing-learning-contents`를 호출하여, 그 결과를 `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.sql`로 작성한다.
 3. `fetch-max-id`를 호출하여, `last_lesson_id`, `last_problem_id`, `last_option_id`, `last_answer_id`를 가져온다.
 4. `pipeline-state`를 업데이트한다.
    - `current_phase` → 2
@@ -24,7 +24,7 @@ Phase 1에서 작성한 `pipeline-state` 파일이 존재하며, 파일 내의 `
 
 ### 출력
 - `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md` (유닛별)
-- `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.md` (유닛별)
+- `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.sql` (유닛별)
 
 ### 실패 처리
 - fetch 스킬 실패 시, 최대 3회 재시도한다. 만약, 3회 모두 실패하면 아래 절차대로 수행한다.
