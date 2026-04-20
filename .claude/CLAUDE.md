@@ -21,6 +21,7 @@ Gravit CS 학습 콘텐츠(lesson / problem / option / answer) 자동 생성 파
 각 스펙은 SoT 문서로 `.claude/spec/` 하위에 있다. skill / agent / hook이 **필요 시점에 Read로 로드**한다.
 
 - `.claude/spec/learning-content-rules.md` — 콘텐츠 구성 규칙
+- `.claude/spec/learning-content-writing-style.md` — 한국어 표기·CS 용어·일관성 스타일 규칙
 - `.claude/spec/learning-content-sql-schema.md` — DB 테이블 스키마 (prod + `_staging`)
 - `.claude/spec/learning-content-sql-template.md` — INSERT 쿼리 템플릿
 - `.claude/spec/problem-examples.md` — generator few-shot 예시

@@ -1,7 +1,7 @@
 #!/bin/bash
-# Stop hook: 작업 완료 알림
+# Notification hook: 권한 승인 / 질문 알림
 
-MSG="작업이 완료되었습니다."
+MSG="권한 승인이 필요합니다."
 TITLE="Claude Code"
 
 OS=$(uname -s)
