@@ -19,7 +19,7 @@
    - `Log`에 `- {ISO8601} [phase_0] id baseline refreshed on resume` 와 같이 작성한다.
    - 아래 파일은 재사용한다.
      - `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md`
-     - `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.md`
+     - `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.sql`
 5. `resume_phase`로 설정된 Phase로 이동한다.
 
 ### 출력

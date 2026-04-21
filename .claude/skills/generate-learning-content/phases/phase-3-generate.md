@@ -9,7 +9,7 @@
 - `pipeline-state`의 `ID Baseline`이 할당되어 있고, `Checklist`의 이전 Phase가 모두 ✅ 상태이다.
 - 아래 파일이 유닛별로 존재한다.
   - `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md`
-  - `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.md`
+  - `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.sql`
 
 ### 읽는 파일
 없음 
@@ -21,7 +21,7 @@
 2. 타겟 유닛별로 ID의 범위를 사전에 할당한다. `.claude/spec/id-management.md`에 의거, Lesson 1개당 ID 소비량(lesson +1, problem +6, option +16, answer +2)과 `ID Baseline`를 참고하여 각 유닛에 배정한다. `보존하고 skip` 처리된 유닛은 ID 할당에서 제외한다.
 3. 타겟 유닛별로 `learning-content-generator` 서브에이전트를 병렬로 호출한다. 인자는 아래와 같다.
    - `concept_note_path` → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md`
-   - `existing_problems_path` → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.md`
+   - `existing_problems_path` → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.sql`
    - `id_allocation` → 이전 단계에서 분할, 배정한 ID 범위
    - `output_path` → `pipeline-workspace/generation-output/{오늘 날짜}/{unit_id}/lesson.sql`
 4. 각 서브에이전트가 인자로 넘긴 output_path에 파일을 생성하였는지 확인한다.

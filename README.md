@@ -183,7 +183,7 @@ CS 도메인 맥락을 고려한 오탈자/문법 검출
     │
     ├─ Phase 2. 데이터 수집 (메인 세션)
     │   ├─ /fetch-cs-note → concept-note.md
-    │   ├─ /fetch-existing-learning-contents → existing-problems.md
+    │   ├─ /fetch-existing-learning-contents → existing-problems.sql
     │   ├─ fetch-max-id → ID Baseline 확정
     │   └─ pipeline-state 업데이트
     │
@@ -266,7 +266,7 @@ CS 도메인 맥락을 고려한 오탈자/문법 검출
     ├── pipeline-state-{YYYY-MM-DD}.md         ← 파이프라인 상태 추적 파일
     ├── fetch-cache/{YYYY-MM-DD}/{unit_id}/
     │   ├── concept-note.md                    ← Phase 2: fetch-cs-note 산출물
-    │   └── existing-problems.md               ← Phase 2: fetch-existing-learning-contents 산출물
+    │   └── existing-problems.sql              ← Phase 2: fetch-existing-learning-contents 산출물
     ├── generation-output/{YYYY-MM-DD}/{unit_id}/
     │   └── lesson.sql                         ← Phase 3/5/6: generator + manual-review 최종 SQL
     └── review-output/{YYYY-MM-DD}/{unit_id}/

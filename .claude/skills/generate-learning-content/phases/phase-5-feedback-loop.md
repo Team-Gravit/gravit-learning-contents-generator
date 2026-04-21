@@ -32,7 +32,7 @@ Phase 4에서 REJECT 판정된 학습 컨텐츠에 대해 `learning-content-gene
          - `review_path` → `pipeline-workspace/review-output/{오늘 날짜}/{unit_id}/review.md`
          - `lesson_sql_path` → `pipeline-workspace/generation-output/{오늘 날짜}/{unit_id}/lesson.sql`
          - `concept_note_path` → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md`
-         - `existing_problems_path` → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.md`
+         - `existing_problems_path` → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.sql`
      - `learning-content-generator` 작업 종료 후, `learning-content-reviewer` 재호출하여 `review.md`를 업데이트한다.
      - `review.md` 업데이트 결과에 따라 재시도 로그를 업데이트한다.
      - 모든 항목이 PASS라면 루프를 종료하고, 하나라도 REJECT라면 재시도한다.
