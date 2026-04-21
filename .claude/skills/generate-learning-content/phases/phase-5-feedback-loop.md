@@ -23,17 +23,20 @@ Phase 4에서 REJECT 판정된 학습 컨텐츠에 대해 `learning-content-gene
    - 시도 번호 ≤ 3
      - 문제, 레슨 단위별 인자를 확인한 후, `learning-content-generator`를 재호출한다.
        - 문제 단위:
-         - `retry_mode` → `problem`
+         - `retry_mode` → `"problem"`
          - `target_refs` → `[10, 11, 12]`
        - 레슨 단위:
-         - `retry_mode` → `lesson_difficulty`
-         - `target_refs` → `lesson`
+         - `retry_mode` → `"lesson_difficulty"`
+         - `target_refs` → `"lesson"`
        - 공통
+         - `mode` → `"retry"`
          - `review_path` → `pipeline-workspace/review-output/{오늘 날짜}/{unit_id}/review.md`
          - `lesson_sql_path` → `pipeline-workspace/generation-output/{오늘 날짜}/{unit_id}/lesson.sql`
          - `concept_note_path` → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md`
          - `existing_problems_path` → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.sql`
-     - `learning-content-generator` 작업 종료 후, `learning-content-reviewer` 재호출하여 `review.md`를 업데이트한다.
+     - `learning-content-generator` 작업 종료 후, `learning-content-reviewer`를 아래 인자로 재호출하여 `review.md`를 업데이트한다.
+       - `lesson_sql_path` → `pipeline-workspace/generation-output/{오늘 날짜}/{unit_id}/lesson.sql`
+       - `review_output_path` → `pipeline-workspace/review-output/{오늘 날짜}/{unit_id}/review.md`
      - `review.md` 업데이트 결과에 따라 재시도 로그를 업데이트한다.
      - 모든 항목이 PASS라면 루프를 종료하고, 하나라도 REJECT라면 재시도한다.
    - 시도 번호 > 3

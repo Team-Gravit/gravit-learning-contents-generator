@@ -20,6 +20,7 @@
    - `보존하고 skip` → 해당 유닛은 이번 Phase 3에서 제외하고 `Checklist.phase_3 = ✅`를 유지한다.
 2. 타겟 유닛별로 ID의 범위를 사전에 할당한다. `.claude/spec/id-management.md`에 의거, Lesson 1개당 ID 소비량(lesson +1, problem +6, option +16, answer +2)과 `ID Baseline`를 참고하여 각 유닛에 배정한다. `보존하고 skip` 처리된 유닛은 ID 할당에서 제외한다.
 3. 타겟 유닛별로 `learning-content-generator` 서브에이전트를 병렬로 호출한다. 인자는 아래와 같다.
+   - `mode` → `"initial"`
    - `concept_note_path` → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md`
    - `existing_problems_path` → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.sql`
    - `id_allocation` → 이전 단계에서 분할, 배정한 ID 범위
