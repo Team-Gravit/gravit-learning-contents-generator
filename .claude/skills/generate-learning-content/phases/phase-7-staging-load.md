@@ -6,7 +6,7 @@
 백오피스 리뷰 통과 후, `_prod` 테이블로 승격되는 전 단계이다.
 
 ### 선행 조건
-- `pipeline-sate`의 `Checklist.phase_6`가 모두 ✅ 이다.
+- `pipeline-state`의 `Checklist.phase_6`가 모두 ✅ 이다.
 - `pipeline-state`의 `Manual Review`가 비어있다.
 - 프로젝트 루트의 `.env`에 `DATABASE_URL`이 설정되어 있다.
 
@@ -33,5 +33,5 @@
 - `.env` 또는 `DATABASE_URL` 누락 시 즉시 중단, 사용자에게 보고.
 
 ### 다음 phase
-- 없음. 파이프라인 종료. (백오피스에서 `_staging` → prod 승격)
+- 없음. 파이프라인 종료.
 

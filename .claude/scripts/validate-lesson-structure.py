@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
-# lesson.sql 구조 카운트 검증.
-#   - problem_staging: OBJECTIVE 4 + SUBJECTIVE 2
-#   - option_staging:  각 OBJECTIVE problem_id당 선지 4 / is_answer=true 1
-#   - answer_staging:  각 SUBJECTIVE problem_id당 answer 1
-#
 # 사용법: validate-lesson-structure.py <lesson.sql>
 # exit: 0 통과 / 1 검증 실패 / 2 인자·파일 오류
-#
-# SQL 무결성(순서/FK/블록/ID 연속성)은 validate-lesson-sql.py에서 별도 검증.
 
 import re
 import sys

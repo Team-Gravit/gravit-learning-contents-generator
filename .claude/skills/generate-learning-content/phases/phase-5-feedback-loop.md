@@ -61,8 +61,6 @@ Phase 4에서 REJECT 판정된 학습 컨텐츠에 대해 `learning-content-gene
 ### 재시도 로그 양식 (세션 보유)
 
 ```markdown
-재시도 시작 시 유닛별로 아래 블록을 세션에 생성하고 매 시도마다 행을 추가한다. 파일로 저장하지 않는다.
-
 #### 레슨 블록 — `{unit_id}`
 
 | 시도 번호 | 시점 | reject_reasons | improvement_direction | verdict |

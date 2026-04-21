@@ -47,9 +47,9 @@ description: Gravit 서비스의 학습 콘텐츠 관련 테이블 스키마. pr
 
 ## staging 테이블
 
-파이프라인 출력은 `_staging` 테이블에 적재된다(Phase 7). 각 테이블은 prod 테이블과 **같은 컬럼 구조**에 `label VARCHAR NOT NULL` 컬럼이 추가된다. 백오피스에서 staging 테이블을 조회·검수한 후 prod 테이블로 승격한다.
+각 staging 테이블은 prod 테이블과 **같은 컬럼 구조**에 `label VARCHAR NOT NULL` 컬럼이 추가된다.
 
-`label` 값은 배치 식별자로, 파이프라인 실행일 기반 고정 포맷 `YYYY-MM-DD-update` (예: `2026-04-16-update`).
+`label` 값은 파이프라인 실행일 기반 고정 포맷 `YYYY-MM-DD-update` (예: `2026-04-16-update`).
 
 **lesson_staging**
 

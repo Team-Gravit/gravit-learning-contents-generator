@@ -1,21 +1,12 @@
 #!/usr/bin/env python3
-# lesson.sql SQL 무결성 검증.
-#   - INSERT 순서: lesson_staging → problem_staging → option_staging → answer_staging
-#   - FK 무결성: problem.lesson_id, option.problem_id (OBJECTIVE), answer.problem_id (SUBJECTIVE)
-#   - option_staging 단일 INSERT VALUES 블록
-#   - (옵션) ID 연속성: --id-allocation 제공 시 baseline 기반 contiguous 확인
-#
 # 사용법:
 #   validate-lesson-sql.py <lesson.sql>
 #   validate-lesson-sql.py <lesson.sql> --id-allocation '<JSON 또는 JSON 파일 경로>'
 #
 # --id-allocation JSON 스키마:
 #   {"lesson_start": int, "problem_start": int, "option_start": int, "answer_start": int}
-#   각 start는 해당 유닛에 할당된 ID 범위의 첫 값. 개수는 lesson 1 / problem 6 / option 16 / answer 2 고정.
 #
 # exit: 0 통과 / 1 검증 실패 / 2 인자·파일 오류
-#
-# 구조 카운트(problem 개수, 선지 개수, answer 개수)는 validate-lesson-structure.py에서 별도 검증.
 
 import argparse
 import json

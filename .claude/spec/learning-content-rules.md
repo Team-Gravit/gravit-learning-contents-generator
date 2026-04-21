@@ -4,15 +4,9 @@ description: 학습 콘텐츠(lesson, 문제, 정답, 선지) 구성 및 생성 
 
 # 학습 콘텐츠 구성 규칙
 
-이 파일은 학습 컨텐츠 표준 스펙이다. 규칙을 집행하는 구현체(skill / agent / hook)는 자신의 문서에서 이 스펙을 읽는다고 선언한다.
-
----
-
 ## 기본 단위
 
 스킬 1회 호출당 lesson 1개를 생성하라. lesson 1개는 반드시 OBJECTIVE 4문제 + SUBJECTIVE 2문제 = 총 6문제로 구성하라.
-
-> 초기 시드 데이터(`pipeline-workspace/problem-seed/`)는 유닛당 2~3개 레슨으로 구성되어 있다. 이는 초기 데이터 적재 시의 예외적 규약이다.
 
 ---
 

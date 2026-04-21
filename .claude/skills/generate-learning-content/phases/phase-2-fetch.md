@@ -3,13 +3,11 @@
 ### 목적
 작업할 유닛의 개념노트와 기존 문제 목록을 수집하며 ID Baseline을 확정한다.
 
-수집한 파일은 파일로 저장하여 이후 Phase에서 각 서브에이전트가 인덱스를 통해 참조하도록 한다.
-
 ### 선행 조건
 Phase 1에서 작성한 `pipeline-state` 파일이 존재하며, 파일 내의 `target_units`가 확정되어 있는 상태이다.
 
 ### 참조 파일
-- `.claude/spec/id-management.md` — ID Baseline 캐시 금지 / 매 Phase 2 재조회.
+- `.claude/spec/id-management.md`
 
 ### 절차
 1. `pipeline-state` 파일의 `Meta.target_units`의 각 유닛에 대해 `fetch-cs-note`를 호출하여, 그 결과를 `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md`로 작성한다.

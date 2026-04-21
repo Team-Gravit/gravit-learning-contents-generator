@@ -1,6 +1,5 @@
 # 검수 출력 템플릿
 
-reviewer 서브에이전트가 채점 결과를 출력할 때 사용하는 마크다운 템플릿이다.
 채점 기준은 `.claude/spec/review-rubric.md` 참조.
 
 ---

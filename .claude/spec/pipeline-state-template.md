@@ -2,10 +2,6 @@
 
 `pipeline-workspace/pipeline-state-{YYYY-MM-DD}.md`는 아래 고정 구조를 따른다.
 
-복구(Phase 0)는 이 스키마에 의존하므로 필드 추가·삭제 시 복구 로직도 함께 갱신하라.
-
----
-
 ### 템플릿
 
 ````markdown

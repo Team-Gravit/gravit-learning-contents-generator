@@ -13,7 +13,7 @@
 1. `pipeline-workspace/pipeline-state-{오늘 날짜}.md` 파일이 존재하는지 확인하고, 존재하지 않는다면 즉시 Phase 1로 이동한다.
 2. `pipeline-workspace/pipeline-state-{오늘 날짜}.md` 파일이 존재하면 아래 절차를 따른다.
 3. `pipeline-workspace/pipeline-state-{오늘 날짜}.md` 파일을 읽고, `Checklist`에서 ⏳ 또는 ❌ 로 표기된 가장 이른 Phase 번호를 찾아 이를 `resume_phase`로 기록한다.
-4. `resume_phase`가 2보다 큰 경우, Phase 전체를 되감지 않고 **ID Baseline만 갱신**한다. DB가 외부에서 바뀌었을 수 있어 캐시된 baseline은 신뢰할 수 없다.
+4. `resume_phase`가 2보다 큰 경우, Phase 전체를 되감지 않고 **ID Baseline만 갱신**한다.
    - `fetch-max-id`를 호출하여 `last_lesson_id`, `last_problem_id`, `last_option_id`, `last_answer_id`를 재조회한다.
    - `pipeline-state`의 `ID Baseline`을 갱신한다.
    - `Log`에 `- {ISO8601} [phase_0] id baseline refreshed on resume` 와 같이 작성한다.
