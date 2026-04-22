@@ -7,7 +7,7 @@ allowed-tools: Read, Glob
 # fetch-existing-learning-contents
 
 ## 입력
-- `unit_id` (int, 필수)
+- `unit_id` (int, 필수) — 정수 그대로 전달된다 (예: `1`, `11`).
 
 ## 출력
 - 표준 출력: 매칭된 파일마다 아래 블록을 이어 붙인다.
@@ -21,8 +21,13 @@ allowed-tools: Read, Glob
 
 ### Phase 1. 파일 탐색
 아래 두 글롭으로 파일 경로를 수집한다. 순서는 problem-seed → generation-output.
-- `pipeline-workspace/problem-seed/*/unit-{unit_id}.sql`
+
+- `pipeline-workspace/problem-seed/*/unit-{unit_id:02d}.sql`
+  - `unit_id`를 **반드시 2자리로 zero-pad 하여** 치환한다 (`1` → `01`, `11` → `11`).
+  - `unit_id = 1`일 때 최종 글롭: `pipeline-workspace/problem-seed/*/unit-01.sql`
 - `pipeline-workspace/generation-output/*/{unit_id}/*.sql`
+  - 이쪽은 **zero-pad 하지 않는다**. `unit_id`를 raw 정수로 그대로 치환한다.
+  - `unit_id = 1`일 때 최종 글롭: `pipeline-workspace/generation-output/*/1/*.sql`
 
 ### Phase 2. 내용 연결
 수집된 각 파일을 Read하여 "출력" 형식대로 연결해 표준 출력으로 내보낸다. 0건이면 `NO_EXISTING_CONTENT`.
