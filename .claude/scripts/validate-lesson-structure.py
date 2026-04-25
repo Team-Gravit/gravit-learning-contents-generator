@@ -22,6 +22,7 @@ _INSERT_HEAD = re.compile(
 class _ParsedLesson:
     insert_order: list[str] = field(default_factory=list)
     table_block_counts: dict[str, int] = field(default_factory=dict)
+    staging_label_rows: list[list[str]] = field(default_factory=list)
     lesson_rows: list[list[str]] = field(default_factory=list)
     problem_rows: list[list[str]] = field(default_factory=list)
     option_rows: list[list[str]] = field(default_factory=list)
@@ -118,6 +119,7 @@ def _parse_lesson_sql(path: str | Path) -> _ParsedLesson:
     sql = Path(path).read_text(encoding="utf-8")
     parsed = _ParsedLesson()
     rows_by_table = {
+        "staging_label": parsed.staging_label_rows,
         "lesson_staging": parsed.lesson_rows,
         "problem_staging": parsed.problem_rows,
         "option_staging": parsed.option_rows,

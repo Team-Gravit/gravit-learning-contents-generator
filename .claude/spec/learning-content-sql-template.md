@@ -6,13 +6,17 @@ description: 학습 콘텐츠 INSERT SQL 쿼리 작성 템플릿 및 순서. 파
 
 ## 쿼리 작성 순서
 
-`lesson_staging` → `problem_staging` → `option_staging` (OBJECTIVE) → `answer_staging` (SUBJECTIVE) 순서로 작성하라.
+`staging_label` → `lesson_staging` → `problem_staging` → `option_staging` (OBJECTIVE) → `answer_staging` (SUBJECTIVE) 순서로 작성하라.
 
-`{label}`은 pipeline-state 헤더 `date` 값 기반 `YYYY-MM-DD-update` 고정 포맷이다 (예: `2026-04-16-update`).
+`{label}`은 호출자가 인자로 전달한 값을 그대로 사용하라. 임의로 생성하지 마라.
 
 ## 템플릿
 
 ```sql
+-- 라벨 메타 등록 (FK 부모, 반드시 첫 INSERT)
+INSERT INTO staging_label (label, unit_id, description)
+VALUES ('{label}', {unit_id}, 'Unit {unit_id} - 신규 lesson 1건');
+
 -- Lesson 생성
 INSERT INTO lesson_staging (id, unit_id, title, label)
 VALUES ({lesson_id}, {unit_id}, '{lesson_title}', '{label}');

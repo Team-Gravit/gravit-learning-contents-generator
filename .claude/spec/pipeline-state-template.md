@@ -1,6 +1,6 @@
 ## pipeline-state 파일 스키마
 
-`pipeline-workspace/pipeline-state-{YYYY-MM-DD}.md`는 아래 고정 구조를 따른다.
+`pipeline-workspace/pipeline-state-{YYYY-MM-DD}-{seq}.md`는 아래 고정 구조를 따른다 (`seq`는 같은 날 1부터 증가).
 
 ### 템플릿
 
@@ -14,6 +14,9 @@ current_phase: 0
 ## Meta
 - target_units: [unit_id, ...]
 - max_retry_per_problem: 3
+- labels:
+  - {unit_id}: {YYYY-MM-DD}-{4자}
+  - ...
 
 ## ID Baseline
 - last_lesson_id: {n}

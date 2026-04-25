@@ -3,8 +3,6 @@
 ### 목적
 각 유닛의 `lesson.sql`을 운영 데이터베이스의 `_staging` 테이블에 적재한다.
 
-백오피스 리뷰 통과 후, `_prod` 테이블로 승격되는 전 단계이다.
-
 ### 선행 조건
 - `pipeline-state`의 `Checklist.phase_6`가 모두 ✅ 이다.
 - `pipeline-state`의 `Manual Review`가 비어있다.

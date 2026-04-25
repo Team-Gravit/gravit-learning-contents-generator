@@ -9,10 +9,10 @@ Gravit CS 학습 콘텐츠(lesson / problem / option / answer) 자동 생성 파
 
 ## Pipeline State
 
-- **위치:** `pipeline-workspace/pipeline-state-{YYYY-MM-DD}.md`
+- **위치:** `pipeline-workspace/pipeline-state-{YYYY-MM-DD}-{seq}.md` (`seq`는 같은 날 첫 실행 = `1`, 두 번째 실행 = `2`, ...)
 - **스키마:** `.claude/spec/pipeline-state-template.md`
 
-**복구 규칙 (compaction / 세션 재시작 시):** 오늘 날짜의 pipeline-state 파일이 있으면 먼저 Read하고, Checklist에서 미완료인 가장 이른 phase부터 재개한다. 파일이 없으면 skill을 새로 시작한다.
+**복구 규칙 (compaction / 세션 재시작 시):** 오늘 날짜의 pipeline-state 파일 중 `status: IN_PROGRESS`인 것이 정확히 1개 있으면 그 파일을 Read하고 Checklist에서 미완료인 가장 이른 phase부터 재개한다. 0개면 skill을 새로 시작한다. 2개 이상이면 비정상 상태이므로 사용자에게 확인을 구한다.
 
 ---
 

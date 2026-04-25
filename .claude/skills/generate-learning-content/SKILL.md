@@ -16,7 +16,7 @@ allowed-tools: Read, Write, Edit, Glob, Bash, Task, Skill
 
 | Phase | 파일 | 한 줄 요약 |
 |---|---|---|
-| 0 | `phases/phase-0-recovery.md` | 오늘 날짜의 pipeline-state 존재 여부 확인, 재개 지점 결정. 복구 시 ID Baseline만 재조회 |
+| 0 | `phases/phase-0-recovery.md` | 오늘 날짜의 `IN_PROGRESS` pipeline-state가 있으면 재개, 없으면 Phase 1. 복구 시 ID Baseline만 재조회 |
 | 1 | `phases/phase-1-planning.md` | 유닛 파싱, pipeline-state 초기화 |
 | 2 | `phases/phase-2-fetch.md` | 개념노트·기존 문제 수집, ID Baseline 확정 (캐시 금지) |
 | 3 | `phases/phase-3-generate.md` | 유닛별 generator 서브에이전트 병렬 호출 → 1 lesson씩 생성 |

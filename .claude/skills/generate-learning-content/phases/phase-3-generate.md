@@ -21,6 +21,8 @@
 2. 타겟 유닛별로 ID의 범위를 사전에 할당한다. `.claude/spec/id-management.md`에 의거, Lesson 1개당 ID 소비량(lesson +1, problem +6, option +16, answer +2)과 `ID Baseline`를 참고하여 각 유닛에 배정한다. `보존하고 skip` 처리된 유닛은 ID 할당에서 제외한다.
 3. 타겟 유닛별로 `learning-content-generator` 서브에이전트를 병렬로 호출한다. 인자는 아래와 같다.
    - `mode` → `"initial"`
+   - `unit_id` → 타겟 유닛 ID
+   - `label` → `pipeline-state.Meta.labels[unit_id]` (Phase 1에서 발급)
    - `concept_note_path` → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md`
    - `existing_problems_path` → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.sql`
    - `id_allocation` → 이전 단계에서 분할, 배정한 ID 범위
@@ -37,7 +39,7 @@
 
 ### 실패 처리
 - 서브에이전트 호출 실패 또는 생성해야 할 파일 누락 시, 같은 인자로 최대 3회 재시도한다.
-- 재시도 3회를 모두 실패한 유닛은 `pipeline-state`의 `Checklist.phase_3`를 ❌로 기록하고, 나머지 성공 유낫민 다음 Phase를 진행한다.
+- 재시도 3회를 모두 실패한 유닛은 `pipeline-state`의 `Checklist.phase_3`를 ❌로 기록하고, 나머지 성공 유닛만 다음 Phase를 진행한다.
 - 모든 유닛이 실패한 경우, `pipeline-state`의 `status`를 `FAILED`로 업데이트한 뒤 종료한다. 
 
 ### 다음 phase

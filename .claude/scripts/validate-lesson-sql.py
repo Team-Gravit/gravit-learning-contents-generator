@@ -30,6 +30,7 @@ _INSERT_HEAD = re.compile(
 class _ParsedLesson:
     insert_order: list[str] = field(default_factory=list)
     table_block_counts: dict[str, int] = field(default_factory=dict)
+    staging_label_rows: list[list[str]] = field(default_factory=list)
     lesson_rows: list[list[str]] = field(default_factory=list)
     problem_rows: list[list[str]] = field(default_factory=list)
     option_rows: list[list[str]] = field(default_factory=list)
@@ -126,6 +127,7 @@ def _parse_lesson_sql(path: str | Path) -> _ParsedLesson:
     sql = Path(path).read_text(encoding="utf-8")
     parsed = _ParsedLesson()
     rows_by_table = {
+        "staging_label": parsed.staging_label_rows,
         "lesson_staging": parsed.lesson_rows,
         "problem_staging": parsed.problem_rows,
         "option_staging": parsed.option_rows,
@@ -146,7 +148,7 @@ def _parse_lesson_sql(path: str | Path) -> _ParsedLesson:
 # SQL 무결성 검증
 # ------------------------------------------------------------
 
-EXPECTED_ORDER = ["lesson_staging", "problem_staging", "option_staging", "answer_staging"]
+EXPECTED_ORDER = ["staging_label", "lesson_staging", "problem_staging", "option_staging", "answer_staging"]
 ALLOCATION_KEYS = {"lesson_start", "problem_start", "option_start", "answer_start"}
 EXPECTED_COUNTS = {"lesson": 1, "problem": 6, "option": 16, "answer": 2}
 
@@ -233,6 +235,41 @@ def collect_answers_and_check_fk(
     return ids
 
 
+def check_label_consistency(parsed: _ParsedLesson, errors: list[str]) -> None:
+    if len(parsed.staging_label_rows) != 1:
+        errors.append(
+            f"staging_label INSERT row 개수: expected 1, got {len(parsed.staging_label_rows)}"
+        )
+        return
+    head = parsed.staging_label_rows[0]
+    if len(head) < 3:
+        errors.append("staging_label row 필드 부족 (<3)")
+        return
+    label_value = _unquote(head[0])
+
+    def _label_at(rows: list[list[str]], idx: int) -> list[str]:
+        out: list[str] = []
+        for r in rows:
+            if len(r) > idx:
+                out.append(_unquote(r[idx]))
+        return out
+
+    mismatches: list[str] = []
+    for tbl, rows, idx in (
+        ("lesson_staging", parsed.lesson_rows, 3),
+        ("problem_staging", parsed.problem_rows, 5),
+        ("option_staging", parsed.option_rows, 5),
+        ("answer_staging", parsed.answer_rows, 4),
+    ):
+        for v in _label_at(rows, idx):
+            if v != label_value:
+                mismatches.append(f"{tbl}.label='{v}' ≠ staging_label.label='{label_value}'")
+    for m in mismatches[:5]:
+        errors.append(f"label 불일치: {m}")
+    if len(mismatches) > 5:
+        errors.append(f"label 불일치 추가 {len(mismatches) - 5}건 생략")
+
+
 def check_continuity(errors: list[str], label: str, actual: list[int], start: int) -> None:
     count = EXPECTED_COUNTS[label]
     expected = set(range(start, start + count))
@@ -256,6 +293,7 @@ def run_checks(parsed: _ParsedLesson, allocation: dict | None) -> list[str]:
 
     check_insert_order(parsed, errors)
     check_option_block_count(parsed, errors)
+    check_label_consistency(parsed, errors)
 
     lesson_id = collect_lesson_id(parsed)
     problems = collect_problems(parsed)

@@ -10,19 +10,17 @@ Phase 1에서 작성한 `pipeline-state` 파일이 존재하며, 파일 내의 `
 - `.claude/spec/id-management.md`
 
 ### 절차
-1. `pipeline-state` 파일의 `Meta.target_units`의 각 유닛에 대해 **개념노트 캐시를 재사용하거나 새로 fetch**하며 아래 순서를 따른다.
-   1. `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md`가 이미 있으면 그대로 둔다. (cache hit, today)
-   2. 캐시가 전혀 없으면 `fetch-cs-note`를 호출하여 `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md`로 작성한다. (cache miss)
-   - 수동 갱신이 필요할 때는 사용자가 해당 `{unit_id}/concept-note.md`(또는 `{날짜}/{unit_id}/` 전체)를 삭제하면 다음 실행에서 자동으로 새로 fetch된다.
-2. `pipeline-state` 파일의 `Meta.target_units`의 각 유닛에 대해 `fetch-existing-learning-contents`를 호출하여, 그 결과를 `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.sql`로 작성한다. (기존 문제 목록은 변경 가능성이 있으므로 캐시 재사용하지 않고 매번 새로 fetch)
-3. `fetch-max-id`를 호출하여, `last_lesson_id`, `last_problem_id`, `last_option_id`, `last_answer_id`를 가져온다.
+1. `pipeline-state` 파일의 `Meta.target_units`의 각 유닛에 대해 개념노트를 준비한다.
+   - `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md`가 이미 있으면 그대로 둔다.
+   - 없으면 `fetch-cs-note`를 호출하여 같은 경로에 작성한다.
+2. `Meta.target_units`의 각 유닛에 대해 `fetch-existing-learning-contents`를 호출하여 결과를 `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.sql`로 작성한다 (캐시 재사용 안 함).
+3. `fetch-max-id`를 호출하여 `last_lesson_id`, `last_problem_id`, `last_option_id`, `last_answer_id`를 가져온다.
 4. `pipeline-state`를 업데이트한다.
    - `current_phase` → 2
-   - `ID Baseline` → 3단계에서 얻은 값으로 업데이트
-   - `Checklist` 의 모든 유닛의 `phase_2` → ✅
+   - `ID Baseline` → 단계 3 결과
+   - `Checklist`의 모든 유닛의 `phase_2` → ✅
 5. `Log`에 다음과 같이 작성한다.
-   - 유닛별 개념노트 캐시 상태: `{ISO8601} [phase_2] concept-note unit{unit_id} {cache hit today | cache hit {원본 날짜} | cache miss, fetched}`
-   - 최종: `{ISO8601} [phase_2] baseline fetched ({last_lesson_id}/{last_problem_id}/{last_option_id}/{last_answer_id})`
+   - `{ISO8601} [phase_2] baseline fetched ({last_lesson_id}/{last_problem_id}/{last_option_id}/{last_answer_id})`
 
 ### 출력
 - `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md` (유닛별)
