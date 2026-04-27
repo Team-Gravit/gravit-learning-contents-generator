@@ -149,8 +149,8 @@ def _parse_lesson_sql(path: str | Path) -> _ParsedLesson:
 # ------------------------------------------------------------
 
 EXPECTED_ORDER = ["staging_label", "lesson_staging", "problem_staging", "option_staging", "answer_staging"]
-ALLOCATION_KEYS = {"lesson_start", "problem_start", "option_start", "answer_start"}
-EXPECTED_COUNTS = {"lesson": 1, "problem": 6, "option": 16, "answer": 2}
+ALLOCATION_KEYS = {"lesson_start", "problem_start", "option_start", "answer_start", "label_start"}
+EXPECTED_COUNTS = {"lesson": 1, "problem": 6, "option": 16, "answer": 2, "label": 1}
 
 
 def load_allocation(spec: str) -> dict:
@@ -242,10 +242,10 @@ def check_label_consistency(parsed: _ParsedLesson, errors: list[str]) -> None:
         )
         return
     head = parsed.staging_label_rows[0]
-    if len(head) < 3:
-        errors.append("staging_label row 필드 부족 (<3)")
+    if len(head) < 4:
+        errors.append("staging_label row 필드 부족 (<4)")
         return
-    label_value = _unquote(head[0])
+    label_value = _unquote(head[1])
 
     def _label_at(rows: list[list[str]], idx: int) -> list[str]:
         out: list[str] = []
@@ -305,6 +305,14 @@ def run_checks(parsed: _ParsedLesson, allocation: dict | None) -> list[str]:
     answer_ids = collect_answers_and_check_fk(parsed, subj_ids, errors)
 
     if allocation is not None:
+        label_id = None
+        if parsed.staging_label_rows and parsed.staging_label_rows[0]:
+            label_id = _to_int(parsed.staging_label_rows[0][0])
+        check_continuity(
+            errors, "label",
+            [label_id] if label_id is not None else [],
+            allocation["label_start"],
+        )
         check_continuity(
             errors, "lesson",
             [lesson_id] if lesson_id is not None else [],

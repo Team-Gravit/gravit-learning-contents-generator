@@ -16,6 +16,7 @@ Phase 2에서 `fetch-max-id` 스킬로 prod DB의 MAX ID를 확인하고 pipelin
 - last_problem_id: 532
 - last_option_id: 1466
 - last_answer_id: 164
+- last_label_id: 12
 ```
 
 ## 부여 규칙
@@ -26,11 +27,12 @@ Phase 2에서 `fetch-max-id` 스킬로 prod DB의 MAX ID를 확인하고 pipelin
 
 ## Lesson 1개당 ID 소비량
 
-| 테이블  | 소비 개수 | 근거                                     |
-|---------|-----------|------------------------------------------|
-| lesson  | 1         | lesson 본체                              |
-| problem | 6         | OBJECTIVE 4 + SUBJECTIVE 2               |
-| option  | 16        | OBJECTIVE 4개 × 선지 4개 (SUBJECTIVE 제외) |
-| answer  | 2         | SUBJECTIVE 2개 × 1개씩 (OBJECTIVE 제외)   |
+| 테이블        | 소비 개수 | 근거                                       |
+|---------------|-----------|--------------------------------------------|
+| lesson        | 1         | lesson 본체                                |
+| problem       | 6         | OBJECTIVE 4 + SUBJECTIVE 2                 |
+| option        | 16        | OBJECTIVE 4개 × 선지 4개 (SUBJECTIVE 제외) |
+| answer        | 2         | SUBJECTIVE 2개 × 1개씩 (OBJECTIVE 제외)    |
+| staging_label | 1         | 유닛(=lesson) 1개당 라벨 1개               |
 
 멀티 유닛 실행 시 skill은 이 수량을 기준으로 유닛 순서대로 ID 범위를 잘라 서브에이전트에 배정한다.

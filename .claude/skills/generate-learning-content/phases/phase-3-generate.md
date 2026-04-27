@@ -18,7 +18,7 @@
 1. **재실행 가드.** 유닛별 `pipeline-workspace/generation-output/{오늘 날짜}/{unit_id}/lesson.sql` 파일이 이미 존재하는지 확인한다. 존재하는 유닛이 하나 이상이면, 해당 유닛 목록을 사용자에게 제시하고 `[덮어쓰기 / 보존하고 skip]` 중 선택을 받는다.
    - `덮어쓰기` → 해당 유닛도 생성 대상에 포함한다.
    - `보존하고 skip` → 해당 유닛은 이번 Phase 3에서 제외하고 `Checklist.phase_3 = ✅`를 유지한다.
-2. 타겟 유닛별로 ID의 범위를 사전에 할당한다. `.claude/spec/id-management.md`에 의거, Lesson 1개당 ID 소비량(lesson +1, problem +6, option +16, answer +2)과 `ID Baseline`를 참고하여 각 유닛에 배정한다. `보존하고 skip` 처리된 유닛은 ID 할당에서 제외한다.
+2. 타겟 유닛별로 ID의 범위를 사전에 할당한다. `.claude/spec/id-management.md`에 의거, Lesson 1개당 ID 소비량(lesson +1, problem +6, option +16, answer +2, staging_label +1)과 `ID Baseline`를 참고하여 각 유닛에 배정한다. `보존하고 skip` 처리된 유닛은 ID 할당에서 제외한다.
 3. 타겟 유닛별로 `learning-content-generator` 서브에이전트를 병렬로 호출한다. 인자는 아래와 같다.
    - `mode` → `"initial"`
    - `unit_id` → 타겟 유닛 ID

@@ -23,6 +23,7 @@ current_phase: 0
 - last_problem_id: {n}
 - last_option_id: {n}
 - last_answer_id: {n}
+- last_label_id: {n}
 
 ## Checklist
 | unit_id | phase_2 | phase_3 | phase_4 | phase_5 | phase_6 | phase_7 |

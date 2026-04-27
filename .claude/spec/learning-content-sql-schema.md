@@ -55,9 +55,9 @@ description: Gravit 서비스의 학습 콘텐츠 관련 테이블 스키마. pr
 
 | 컬럼         | 타입                           | 설명                                              |
 |--------------|--------------------------------|---------------------------------------------------|
-| id           | SERIAL PK                      | 라벨 식별자                                       |
+| id           | BIGINT PK                      | 라벨 식별자 (외부 발번 — `fetch-max-id` baseline 기반) |
 | label        | VARCHAR(32) UNIQUE NOT NULL    | 라벨 값 (`YYYY-MM-DD-{4자}`)                      |
-| unit_id      | INT NOT NULL                   | 유닛 식별자                                       |
+| unit_id      | BIGINT NOT NULL                | 유닛 식별자                                       |
 | description  | VARCHAR(255) NOT NULL          | `Unit {unit_id} - 신규 lesson 1건`                |
 | label_status | VARCHAR(20) NOT NULL           | `pending` / `completed`                           |
 | created_at   | TIMESTAMP NOT NULL DEFAULT NOW | 생성 시각                                         |

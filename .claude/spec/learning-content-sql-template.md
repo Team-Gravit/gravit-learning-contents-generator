@@ -14,8 +14,8 @@ description: 학습 콘텐츠 INSERT SQL 쿼리 작성 템플릿 및 순서. 파
 
 ```sql
 -- 라벨 메타 등록 (FK 부모, 반드시 첫 INSERT)
-INSERT INTO staging_label (label, unit_id, description)
-VALUES ('{label}', {unit_id}, 'Unit {unit_id} - 신규 lesson 1건');
+INSERT INTO staging_label (id, label, unit_id, description)
+VALUES ({label_id}, '{label}', {unit_id}, 'Unit {unit_id} - 신규 lesson 1건');
 
 -- Lesson 생성
 INSERT INTO lesson_staging (id, unit_id, title, label)

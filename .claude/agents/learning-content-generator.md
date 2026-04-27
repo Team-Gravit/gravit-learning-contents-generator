@@ -15,7 +15,7 @@ model: opus
 - `label` (str) — Phase 1에서 발급된 라벨 (`YYYY-MM-DD-{4자}`)
 - `concept_note_path` (str)
 - `existing_problems_path` (str)
-- `id_allocation` (JSON) — `{"lesson_start", "problem_start", "option_start", "answer_start"}`
+- `id_allocation` (JSON) — `{"lesson_start", "problem_start", "option_start", "answer_start", "label_start"}`
 - `output_path` (str)
 
 ### mode = "retry"
@@ -41,11 +41,11 @@ model: opus
 
 ### `mode = "initial"` 절차
 1. `concept_note_path`, `existing_problems_path`를 Read
-2. `id_allocation`에 따라 lesson 1개, problem 6개(OBJECTIVE 4 + SUBJECTIVE 2), option 16개, answer 2개의 ID를 순차 할당
+2. `id_allocation`에 따라 staging_label 1개, lesson 1개, problem 6개(OBJECTIVE 4 + SUBJECTIVE 2), option 16개, answer 2개의 ID를 순차 할당
 3. `learning-content-rules.md`, `learning-content-writing-style.md`, `problem-examples.md`를 기준으로 lesson 제목·6문제 본문·선지·정답 작성
    - `existing_problems_path`의 기존 문제와 발문·본문·선지 구성이 사실상 동일한 문제 생성 금지
 4. `learning-content-sql-template.md` 템플릿에 따라 INSERT SQL을 구성, `output_path`에 Write
-   - 첫 INSERT는 `staging_label`이며 입력 인자 `label`·`unit_id`를 그대로 사용한다.
+   - 첫 INSERT는 `staging_label`이며 `id`는 `id_allocation.label_start`, `label`·`unit_id`는 입력 인자를 그대로 사용한다.
    - `staging_label.description`은 `'Unit {unit_id} - 신규 lesson 1건'` 고정.
    - 4개 staging 테이블의 `label` 컬럼은 모두 입력 인자 `label`을 그대로 사용한다.
 
