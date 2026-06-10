@@ -1,11 +1,13 @@
 ---
 name: fetch-max-id
-description: lesson/problem/option/answer/staging_label의 MAX ID를 집계하여 ID Baseline으로 반환한다.
+description: lesson/problem/option/answer는 prod·staging 통합 MAX, staging_label은 자체 MAX를 집계하여 ID Baseline으로 반환한다.
 allowed-tools: Bash
 ---
 
 ## fetch-max-id
-운영 데이터베이스에서 prod 테이블(`lesson/problem/option/answer`)과 **staging_label**의 MAX ID를 조회하여 반환한다.
+운영 데이터베이스에서 `lesson/problem/option/answer`는 **prod 테이블과 _staging 테이블의 통합 MAX**(GREATEST), **staging_label**은 자체 MAX ID를 조회하여 반환한다.
+
+prod만 조회하면 아직 promote되지 않은 staging 잔여 배치가 baseline에 반영되지 않아 Phase 7 적재 시 PK 충돌이 난다. 통합 MAX를 쓰면 staging 잔여물이 있어도, promote 후 정리돼도 항상 안전하다.
 
 ### 입력
 없음
@@ -39,10 +41,10 @@ set -a && . ./.env && set +a
 ```
 psql "$DATABASE_URL" -tAF'|' -v ON_ERROR_STOP=1 -c "
 SELECT
-  COALESCE((SELECT MAX(id) FROM lesson), 0),
-  COALESCE((SELECT MAX(id) FROM problem), 0),
-  COALESCE((SELECT MAX(id) FROM \"option\"), 0),
-  COALESCE((SELECT MAX(id) FROM answer), 0),
+  GREATEST(COALESCE((SELECT MAX(id) FROM lesson), 0),    COALESCE((SELECT MAX(id) FROM lesson_staging), 0)),
+  GREATEST(COALESCE((SELECT MAX(id) FROM problem), 0),   COALESCE((SELECT MAX(id) FROM problem_staging), 0)),
+  GREATEST(COALESCE((SELECT MAX(id) FROM \"option\"), 0), COALESCE((SELECT MAX(id) FROM option_staging), 0)),
+  GREATEST(COALESCE((SELECT MAX(id) FROM answer), 0),    COALESCE((SELECT MAX(id) FROM answer_staging), 0)),
   COALESCE((SELECT MAX(id) FROM staging_label), 0);
 "
 ```
