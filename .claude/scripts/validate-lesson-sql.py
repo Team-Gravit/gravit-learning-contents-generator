@@ -152,6 +152,24 @@ EXPECTED_ORDER = ["staging_label", "lesson_staging", "problem_staging", "option_
 ALLOCATION_KEYS = {"lesson_start", "problem_start", "option_start", "answer_start", "label_start"}
 EXPECTED_COUNTS = {"lesson": 1, "problem": 6, "option": 16, "answer": 2, "label": 1}
 
+# 운영 DB가 강제하는 varchar 길이 한도. 초과 시 psql 적재(Phase 7)가 "value too long"으로 실패한다.
+# (table, 필드 인덱스, 컬럼명, 최대 길이). 문자열 리터럴 필드만 검사한다.
+# 본문(problem.content)·해설(answer.explanation)은 TEXT라 제한 없음 → 목록에서 제외.
+# 출처: information_schema.columns (2026-06-14 확인). SoT: learning-content-sql-schema.md.
+VARCHAR_LIMITS = [
+    ("staging_label", 1, "label", 32),
+    ("staging_label", 3, "description", 255),
+    ("lesson_staging", 2, "title", 255),
+    ("lesson_staging", 3, "label", 32),
+    ("problem_staging", 2, "instruction", 255),
+    ("problem_staging", 5, "label", 32),
+    ("option_staging", 2, "content", 255),
+    ("option_staging", 3, "explanation", 255),
+    ("option_staging", 5, "label", 32),
+    ("answer_staging", 2, "content", 255),
+    ("answer_staging", 4, "label", 32),
+]
+
 
 def load_allocation(spec: str) -> dict:
     p = Path(spec)
@@ -306,12 +324,41 @@ def check_quote_balance(sql: str, errors: list[str]) -> None:
         )
 
 
+def _stored_len(value: str) -> int:
+    # DB에 저장되는 실제 문자 길이. 바깥 따옴표를 벗기고 이스케이프 ''를 '로 환원해 센다.
+    return len(_unquote(value).replace("''", "'"))
+
+
+def check_varchar_limits(parsed: _ParsedLesson, errors: list[str]) -> None:
+    rows_by_table = {
+        "staging_label": parsed.staging_label_rows,
+        "lesson_staging": parsed.lesson_rows,
+        "problem_staging": parsed.problem_rows,
+        "option_staging": parsed.option_rows,
+        "answer_staging": parsed.answer_rows,
+    }
+    for table, idx, col, limit in VARCHAR_LIMITS:
+        for row in rows_by_table[table]:
+            if len(row) <= idx:
+                continue
+            raw = row[idx].strip()
+            if not (len(raw) >= 2 and raw[0] == "'" and raw[-1] == "'"):
+                continue  # 문자열 리터럴이 아니면(숫자·불리언) 건너뜀
+            length = _stored_len(raw)
+            if length > limit:
+                rid = row[0] if row else "?"
+                errors.append(
+                    f"{table}.{col} id={rid} 길이 {length} > {limit}자 (varchar({limit})) — Phase 7 적재 실패"
+                )
+
+
 def run_checks(parsed: _ParsedLesson, allocation: dict | None) -> list[str]:
     errors: list[str] = []
 
     check_insert_order(parsed, errors)
     check_option_block_count(parsed, errors)
     check_label_consistency(parsed, errors)
+    check_varchar_limits(parsed, errors)
 
     lesson_id = collect_lesson_id(parsed)
     problems = collect_problems(parsed)
