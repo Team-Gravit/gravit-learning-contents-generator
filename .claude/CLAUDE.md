@@ -31,7 +31,7 @@ Gravit CS 학습 콘텐츠(lesson / problem / option / answer) 자동 생성 파
 
 **review/** — 채점 기준
 - `.claude/spec/review/review-rubric.md` — R1~R6 검수 루브릭 + 검수 출력 템플릿
-- `.claude/spec/review/deduction-attribution.md` — 감점→스펙 귀인 맵·레슨 종합 점수 산식 (**assess-learning-content-quality** 스킬용)
+- `.claude/spec/review/deduction-attribution.md` — 감점→스펙 원인-연결표·레슨 종합 점수 산식 (**assess-learning-content-quality** 스킬용)
 
 **pipeline/** — 파이프라인 인프라
 - `.claude/spec/pipeline/pipeline-state-template.md` — pipeline-state 파일 스키마

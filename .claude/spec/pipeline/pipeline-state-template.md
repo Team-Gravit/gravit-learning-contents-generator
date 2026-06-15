@@ -50,7 +50,7 @@ current_phase: 0
 
 ### Observations 어휘
 
-`## Observations`는 실행 중 발생한 **마찰 신호**(반복 감점·검증기 오류·사람 교정)를 한 행에 하나씩 구조화해 쌓는다. `assess-learning-content-quality`가 이 표를 읽어 회고에 활용한다. 사람용 타임라인인 `## Log`와 역할이 다르다(Log는 그대로 유지).
+`## Observations`는 실행 중 발생한 **과정 신호**(반복 감점·검증기 오류·사람 교정)를 한 행에 하나씩 구조화해 쌓는다. `assess-learning-content-quality`가 이 표를 읽어 회고에 활용한다. 사람용 타임라인인 `## Log`와 역할이 다르다(Log는 그대로 유지).
 
 - **phase**: 신호가 관측된 phase 번호(2~7).
 - **unit**: unit_id.

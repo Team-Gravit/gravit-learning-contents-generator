@@ -1,10 +1,10 @@
 ---
-description: 검수 결과(review.md)와 과정 마찰(pipeline-state Observations)을 레슨 종합 점수·마찰 신호로 환산하는 산식과, 감점을 책임 스펙 파일로 귀인하는 맵, 체계적/일회성 판정 기준. assess-learning-content-quality 스킬이 읽는다.
+description: 검수 결과(review.md)와 과정에서 걸린 부분(pipeline-state Observations)을 레슨 종합 점수·과정 신호로 환산하는 산식과, 감점이 어느 스펙 탓인지 연결하는 표, 체계적/일회성 판정 기준. assess-learning-content-quality 스킬이 읽는다.
 ---
 
-## 감점 귀인 & 종합 점수
+## 감점 원인 연결 & 종합 점수
 
-`assess-learning-content-quality` 스킬이 한 번의 파이프라인 실행(**pipeline-state 1개**)의 모든 `review.md`를 읽어, 레슨에 종합 점수를 매기고 감점을 스펙 파일에 귀인할 때 따르는 기준이다. 채점을 새로 하지 않고 **기존 `review.md`의 R1~R6를 집계**한다. 더해, 실행의 pipeline-state **`## Observations`**(과정 마찰 신호)도 함께 읽어 반복성·검증기·사람 교정 신호를 본다.
+`assess-learning-content-quality` 스킬이 한 번의 파이프라인 실행(**pipeline-state 1개**)의 모든 `review.md`를 읽어, 레슨에 종합 점수를 매기고 감점이 어느 스펙 탓인지 연결할 때 따르는 기준이다. 채점을 새로 하지 않고 **기존 `review.md`의 R1~R6를 집계**한다. 더해, 실행의 pipeline-state **`## Observations`**(과정에서 걸린 신호)도 함께 읽어 반복성·검증기·사람 교정 신호를 본다.
 
 ---
 
@@ -30,14 +30,14 @@ description: 검수 결과(review.md)와 과정 마찰(pipeline-state Observatio
 - `review.md`가 AP 코드(예: **AP-01**)를 사유에 적었으면 그 코드도 신호로 함께 수집한다. (`review-rubric.md` R4 프로토콜에 따라 reject 사유에 AP 코드가 실릴 수 있다.)
 - 표기·용어 지적은 R항목에 없으므로, **reject_reasons / improvement_direction의 자유 서술**에서 표기·용어 언급을 별도 신호(**S**)로 수집한다.
 
-**마찰 신호 (Observations).** 위 신호는 최종 `review.md`에서 수집한다. 여기에 더해 실행의 pipeline-state **`## Observations`** 표에서 **과정 마찰**을 함께 수집한다.
+**과정 신호 (Observations).** 위 신호는 최종 `review.md`에서 수집한다. 여기에 더해 실행의 pipeline-state **`## Observations`** 표에서 **과정에서 걸린 부분**을 함께 수집한다.
 - `VALIDATOR:*`·`HUMAN` 행은 그 자체로 신호다.
 - `R*`/`AP`/`S` 행은 **n(반복 횟수)** 과 phase(4=초기 REJECT, 5=재시도)로 **반복성**을 읽는다.
-- 최종 점수가 PASS여도 과정에서 반복된 신호(치유됨)는 마찰 신호로 남는다.
+- 최종 점수가 PASS여도 과정에서 반복된 신호(과정에서 해결됨)는 과정 신호로 남는다.
 
 ---
 
-### 3. 귀인 맵
+### 3. 원인-스펙 연결표
 
 감점 신호를 1차 책임 규칙과 책임 스펙 파일로 잇는다.
 
@@ -54,7 +54,7 @@ description: 검수 결과(review.md)와 과정 마찰(pipeline-state Observatio
 | VALIDATOR:structure | 구조·개수·FK·순서 | sql-template · rules | 템플릿/구조 규칙 명확화 |
 | VALIDATOR:idrange | ID 발번 | id-management | |
 | VALIDATOR:quote | 이스케이프 | sql-template | 이스케이프 규칙 강화 |
-| HUMAN | 사람 교정 대상에 따름 | (교정이 가리키는 스펙) | 최고 신뢰 신호 — 무엇을 고쳤는지로 귀인 |
+| HUMAN | 사람 교정 대상에 따름 | (교정이 가리키는 스펙) | 최고 신뢰 신호 — 무엇을 고쳤는지로 원인 연결 |
 
 파일 경로:
 - rules → `.claude/spec/generation/learning-content-rules.md`
@@ -83,13 +83,13 @@ description: 검수 결과(review.md)와 과정 마찰(pipeline-state Observatio
 
 둘 다 못 미치면 **일회성**이다. 스펙을 바꾸지 않고 **"Phase 5 재시도 권장"** 목록으로만 보고한다. 한 번 삐끗한 감점에 스펙을 바꾸면 규칙이 그 사례에 과적합된다.
 
-**마찰 축 (Observations 기반).** 위 판정은 **최종 상태**(review.md) 기준이다. Observations가 있으면 **과정 기준**을 OR로 더한다 — 아래 중 하나라도 충족하면 체계적이다.
+**과정 기준 (Observations 기반).** 위 판정은 **최종 상태**(review.md) 기준이다. Observations가 있으면 아래 **과정 기준**을 OR로 더한다 — 하나라도 충족하면 체계적이다.
 
 - **반복**: 한 항목의 재시도에서 같은 signal이 **n ≥ 2**.
-- **초기 만연**: Phase 4 초기 REJECT 신호가 실행의 **≥ 50% 레슨**에서 등장(이후 치유 여부 무관).
+- **초반에 두루 나타남**: Phase 4 초기 REJECT 신호가 실행의 **≥ 50% 레슨**에서 등장(이후 해결됐는지는 무관).
 - **검증기 반복**: 같은 `VALIDATOR:*` 버킷이 실행 내 **≥ 2 유닛**에서 등장.
 
-마찰 축으로 체계적이 된 신호는 보고 시 **"치유됨(최종 점수엔 안 보임)"** 을 함께 표기한다. 최종 점수만으로는 안 잡히지만 과정에서 반복되므로 스펙으로 막을 가치가 있다.
+과정 기준으로 체계적이 된 신호는 보고 시 **"과정에서 해결됨(최종 점수엔 안 보임)"** 을 함께 표기한다. 최종 점수만으로는 안 잡히지만 과정에서 반복되므로 스펙으로 막을 가치가 있다.
 
 ---
 
@@ -97,7 +97,7 @@ description: 검수 결과(review.md)와 과정 마찰(pipeline-state Observatio
 
 체계적 약점 하나당 제안 하나. 각 제안은 다음을 담는다.
 
-- **대상 스펙 파일** (귀인 맵 기준)
+- **대상 스펙 파일** (원인-스펙 연결표 기준)
 - **근거**: 어느 레슨/문제의 어느 신호에서 몇 번 나왔는지 집계
 - **변경 전 → 변경 후**: 반영할 구체 텍스트
 - **기대 효과**
