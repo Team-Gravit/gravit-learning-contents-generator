@@ -23,6 +23,11 @@ Phase 3이 생성한 학습 컨텐츠를 **learning-content-reviewer** 서브에
    - **Checklist**의 각 유닛의 **phase_4** → ✅(검증 성공) / ❌(검증 실패) / 이전 ✅ 유지(보존하고 skip)
 4. **Log**에 다음과 같이 작성한다.
    - **- {ISO8601} [phase_4] reviewed units {성공 유닛 목록}, preserved {skip 유닛 목록}, failed {실패 유닛 목록}**.
+5. **Observations 기록.** 각 유닛의 **초기** `review.md`에서 감점 신호를 **pipeline-state**의 **Observations**에 기록한다(`.claude/spec/review/deduction-attribution.md` §2 기준). 피드백 루프가 치유하기 전의 스냅샷이다. `phase`=4.
+   - 문제별 R항목 점수 ≤ 3 또는 reject_reasons 등장 → `R{n}` 행 (`scope`=문제 ref, `n`=1)
+   - reject 사유의 AP 코드 → `AP-NN` 행, 자유서술의 표기·용어 → `S{n}` 행
+   - 레슨 단위 신호(R6 등)는 `scope`=`lesson`
+   - 감점 신호가 없는(전부 PASS·4점 이상) 유닛은 기록하지 않는다.
 
 ### 출력
 - `pipeline-workspace/review-output/{오늘 날짜}/{unit_id}/review.md` (유닛별)

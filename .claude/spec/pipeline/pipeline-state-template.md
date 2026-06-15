@@ -37,11 +37,42 @@ current_phase: 0
 ## Manual Review
 - {unit_id}/{problem_ref}: 재시도 3회 초과 — {마지막 감점 요약}
 
+## Observations
+| phase | unit | scope | signal | n | note |
+|---|---|---|---|---|---|
+| {n} | {unit_id} | {pN/lesson/-} | {signal} | {count} | {1줄 요약} |
+
 ## Log
 - {ISO8601} [phase_{n}] {event}
 ````
 
 ---
+
+### Observations 어휘
+
+`## Observations`는 실행 중 발생한 **마찰 신호**(반복 감점·검증기 오류·사람 교정)를 한 행에 하나씩 구조화해 쌓는다. `assess-learning-content-quality`가 이 표를 읽어 회고에 활용한다. 사람용 타임라인인 `## Log`와 역할이 다르다(Log는 그대로 유지).
+
+- **phase**: 신호가 관측된 phase 번호(2~7).
+- **unit**: unit_id.
+- **scope**: `pN`(problem_ref, p1~p6) · `lesson`(레슨 단위) · `-`(유닛·구조 단위).
+- **signal**: 아래 통제 어휘 중 하나.
+- **n**: 같은 항목에서 그 신호가 반복된 횟수(재시도 등). 1 이상의 정수.
+- **note**: 한 줄 요약. 자유 서술은 이 칸에만 둔다.
+
+**signal 통제 어휘**
+
+| signal | 의미 | 출처 |
+|---|---|---|
+| `R1`~`R6` | 루브릭 항목 감점 | review.md |
+| `AP-NN` | 안티패턴 코드 | review.md reject 사유 |
+| `S1`~`S6` | 표기·용어 | review.md 자유서술 |
+| `VALIDATOR:varchar` | varchar(255) 길이 초과 | 생성기 검증 FAIL |
+| `VALIDATOR:structure` | 개수·타입·FK·INSERT 순서·블록·label 불일치 | 생성기 검증 FAIL |
+| `VALIDATOR:idrange` | ID 연속성·중복 | 생성기 검증 FAIL |
+| `VALIDATOR:quote` | 작은따옴표 짝·이스케이프 | 생성기 검증 FAIL |
+| `HUMAN` | 사람이 직접 교정 | Phase 6 |
+
+각 phase가 무엇을 기록하는지는 해당 phase 파일이 정의한다.
 
 ### 상태 기호
 - ✅ 완료

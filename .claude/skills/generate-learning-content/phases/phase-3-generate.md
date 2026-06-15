@@ -27,18 +27,24 @@
    - **existing_problems_path** → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.sql`
    - **id_allocation** → 이전 단계에서 분할, 배정한 ID 범위
    - **output_path** → `pipeline-workspace/generation-output/{오늘 날짜}/{unit_id}/lesson.sql`
-4. 각 서브에이전트가 인자로 넘긴 output_path에 파일을 생성하였는지 확인한다.
+4. **생성 성공 판정.** 각 서브에이전트의 **반환값**과 산출 파일을 함께 확인한다. **반환값이 `OK`이고 output_path 파일이 존재**할 때만 성공으로 본다. 반환값이 `FAIL`(검증기 stderr 포함)이거나 파일이 없으면 실패로 보고 **실패 처리**의 재시도 대상으로 넘긴다. (FAIL 시 무효 파일이 남아 있을 수 있으므로 파일 존재만으로 성공 판정하지 않는다.)
 5. **pipeline-state**를 업데이트한다.
    - **current_phase** → 3
    - **Checklist**의 각 유닛의 **phase_3** → ✅(검증 성공 시) / ❌(검증 실패) / 이전 ✅ 유지(보존하고 skip)
 6. **Log**에 다음과 같이 작성한다.
    - **- {ISO8601} [phase_3] generated lessons for units {성공 유닛 목록}, preserved {skip 유닛 목록}, failed {실패 유닛 목록}**
+7. **Observations 기록.** 생성 중(재시도 포함) generator 서브에이전트가 **FAIL**을 반환한 적이 있으면(최종 성공 여부와 무관), 반환된 stderr를 아래 버킷으로 분류해 유닛별로 **pipeline-state**의 **Observations**에 기록한다. `phase`=3, `scope`=`-`, `n`=그 버킷이 FAIL에 등장한 시도 수, `note`=대표 사유 1줄.
+   - `varchar` / `> {N}자` → `VALIDATOR:varchar`
+   - `INSERT 순서` / `INSERT 블록` / `label 불일치` / `≠ lesson.id` / `OBJECTIVE 문제가 아님` / `SUBJECTIVE 문제가 아님` / `개수: expected` / `필드 부족` → `VALIDATOR:structure`
+   - `ID 연속성` / `ID 중복` → `VALIDATOR:idrange`
+   - `작은따옴표` / `이스케이프` → `VALIDATOR:quote`
+   - FAIL이 한 번도 없었던 유닛은 기록하지 않는다.
 
 ### 출력
 - `pipeline-workspace/generation-output/{오늘 날짜}/{unit_id}/lesson.sql` (유닛별, 성공 시)
 
 ### 실패 처리
-- 서브에이전트 호출 실패 또는 생성해야 할 파일 누락 시, 같은 인자로 최대 3회 재시도한다.
+- 서브에이전트 호출 실패, 반환값 `FAIL`, 또는 생성해야 할 파일 누락 시, 같은 인자로 최대 3회 재시도한다.
 - 재시도 3회를 모두 실패한 유닛은 **pipeline-state**의 **Checklist.phase_3**를 ❌로 기록하고, 나머지 성공 유닛만 다음 Phase를 진행한다.
 - 모든 유닛이 실패한 경우, **pipeline-state**의 **status**를 **FAILED**로 업데이트한 뒤 종료한다. 
 

@@ -24,6 +24,7 @@ allowed-tools: Read, Write, Edit, Glob, Bash
    - 인자로 `pipeline-state-{date}-{seq}` 파일(또는 date·seq)을 받으면 그것을 대상으로 한다.
    - 인자가 없으면 `pipeline-workspace/pipeline-state-*.md`를 훑어 후보(최근 **COMPLETED** 우선)를 사용자에게 제시하고 하나를 고르게 한다.
    - 대상 pipeline-state에서 **Meta.target_units**와 각 유닛의 `review.md` 경로(`pipeline-workspace/review-output/{date}/{unit_id}/review.md`)를 수집한다.
+   - 대상 pipeline-state의 **`## Observations`** 표(과정 마찰 신호)를 함께 수집한다. 세부 확인이 필요하면 `pipeline-workspace/review-output/{date}/{unit_id}/retry-log.md`로 드릴다운한다.
    - `review.md`가 없는 유닛은 "검수 전"으로 분류해 대상에서 제외하고 사용자에게 알린다.
 
 2. **채점·집계.** `deduction-attribution.md`의 **종합 점수 산식**에 따라 각 유닛의 `review.md`(R1~R6)를 레슨 종합 점수로 환산한다.
@@ -33,14 +34,17 @@ allowed-tools: Read, Write, Edit, Glob, Bash
 
 3. **귀인·약점 추출.** `deduction-attribution.md`의 **감점 신호·귀인 맵·체계적 판정**을 적용한다.
    - 감점 신호를 수집한다 (R항목 ≤ 3 또는 reject_reasons 등장, AP·S 코드 포함).
-   - 각 신호를 책임 스펙 파일로 귀인한다.
-   - **체계적**(레슨 내 ≥ 3문제 또는 실행 내 ≥ 50% 레슨)인 신호만 스펙 제안 대상으로 추린다.
+   - **마찰 신호**도 함께 수집한다 (Observations의 `VALIDATOR:*`·`HUMAN` 행, `R*`/`AP`/`S` 행의 `n`·phase).
+   - 각 신호를 책임 스펙 파일로 귀인한다. `VALIDATOR:*`·`HUMAN`도 귀인 맵으로 귀인한다.
+   - **체계적** 판정은 `deduction-attribution.md` §4를 따른다 — 최종 상태 기준(레슨 내 ≥ 3문제 / 실행 내 ≥ 50% 레슨)에 **마찰 축**(반복 `n≥2` / 초기 만연 ≥ 50% 레슨 / 검증기 ≥ 2 유닛)을 OR로 더한다. 체계적인 신호만 스펙 제안 대상으로 추린다.
+   - 마찰 축으로만 체계적이 된 신호는 **"치유됨(최종 점수엔 안 보임)"** 표기를 유지한다.
    - 나머지(일회성)는 **"Phase 5 재시도 권장"** 목록으로 따로 둔다.
 
 4. **보고 + 제안 출력.** 사용자에게 대화로 출력한다. **파일로 저장하지 않는다.**
    - (A) **스코어보드**: 레슨별 종합 점수 + 실행 요약 + 감점 분포.
    - (B) **일회성 약점**: "Phase 5 재시도 권장" 목록 (스펙 변경 아님).
-   - (C) **넘버링된 스펙 제안**: 체계적 약점 하나당 1개. 각 제안은 `deduction-attribution.md`의 **제안 작성 규칙**(대상 파일·근거·변경 전/후·기대효과)을 따르고 1번부터 번호를 매긴다.
+   - (C) **넘버링된 스펙 제안**: 체계적 약점 하나당 1개(마찰 축으로 체계적이 된 것 포함). 각 제안은 `deduction-attribution.md`의 **제안 작성 규칙**(대상 파일·근거·변경 전/후·기대효과)을 따르고 1번부터 번호를 매긴다.
+   - (D) **마찰 신호 뷰**: Observations에서 나온 반복/치유된 신호·`VALIDATOR:*`·`HUMAN`을 요약한다. 스펙 제안(C)으로 승격된 것과 참고용(일회성)을 구분해 보여준다.
    - 사용자에게 **어느 번호를 반영할지** 묻고 응답을 기다린다. **이 단계에서 파일을 건드리지 않는다.**
 
 5. **선택 적용.** 사용자가 번호를 지정하면(예: **"1, 3번"**) 그 제안에 한해서만 대상 스펙 파일을 **Edit**으로 반영한다.
