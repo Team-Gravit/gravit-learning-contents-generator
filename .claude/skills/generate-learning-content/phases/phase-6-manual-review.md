@@ -33,6 +33,7 @@ Phase 5까지의 결과에서 **manual-review**로 태깅된 항목을 사용자
    - **Manual Review** → 비움
 4. **Log**에 다음과 같이 작성한다.
    - **- {ISO8601} [phase_6] resolved {처리 항목 수} manual-review items**
+5. **Observations 기록.** 각 manual-review 항목을 해소할 때마다 **pipeline-state**의 **Observations**에 `HUMAN` 행을 쓴다. `phase`=6, `scope`=문제 ref 또는 `lesson`, `n`=사용자에게 수정안을 제시한 횟수(반려가 많을수록 큼, 최소 1), `note`=사람이 무엇을 어떻게 고쳤는지 1줄.
 
 ### 출력
 - 수정된 `pipeline-workspace/generation-output/{오늘 날짜}/{unit_id}/lesson.sql` (태깅 주석 제거)
