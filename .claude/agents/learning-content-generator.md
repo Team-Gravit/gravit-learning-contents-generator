@@ -27,12 +27,10 @@ model: opus
 - **existing_problems_path** (str)
 
 ## 참조 파일
-- `.claude/spec/generation/learning-content-rules.md`
+- `.claude/spec/generation/generation-contract.md`
 - `.claude/spec/generation/learning-content-writing-style.md`
 - `.claude/spec/generation/learning-content-sql-schema.md`
 - `.claude/spec/generation/learning-content-sql-template.md`
-- `.claude/spec/generation/problem-good-patterns.md`
-- `.claude/spec/generation/problem-antipatterns.md`
 - `.claude/spec/generation/id-management.md`
 
 ## 절차
@@ -43,11 +41,11 @@ model: opus
 ### **mode = "initial"** 절차
 1. **concept_note_path**, **existing_problems_path**를 Read
 2. **id_allocation**에 따라 staging_label 1개, lesson 1개, problem 6개(OBJECTIVE 4 + SUBJECTIVE 2), option 16개, answer 2개의 ID를 순차 할당
-3. `learning-content-rules.md`, `learning-content-writing-style.md`, `problem-good-patterns.md`, `problem-antipatterns.md`를 기준으로 lesson 제목·6문제 본문·선지·정답 작성
+3. `generation-contract.md`, `learning-content-writing-style.md`를 기준으로 lesson 제목·6문제 본문·선지·정답 작성
    - **existing_problems_path**의 기존 문제와 발문·본문·선지 구성이 사실상 동일한 문제 생성 금지
 4. **재진술 self-check (작성 직후, SQL 구성 전 반드시 수행).** 6문제 각각에 대해 아래를 대조하고, 하나라도 걸리면 그 선지/본문을 고쳐 다시 통과시킨 뒤에만 다음 단계로 넘어간다.
-   - **객관식**: 정답 선지의 핵심 술어·명사구를 본문 문장에서 찾는다. 본문에 같은 내용이 어순·동의어 수준으로 다시 나오면 **재진술**이다 → 정답을 본문에 없는 다른 특징(동작 결과·비교·세대 차이·다른 속성)으로 교체한다. (`problem-antipatterns.md` AP-09)
-   - **주관식**: 본문이 정답 용어의 정의 또는 기능·역할을 그대로 풀어 쓰고 있으면 → 본문을 구체적 장면·수치·로그·증상으로 교체한다. 발문이 정답이 속한 계층·범주를 직접 부르면 큰 갈래로 낮춘다. (`learning-content-rules.md` INV-1·INV-2)
+   - **객관식**: 정답 선지의 핵심 술어·명사구를 본문 문장에서 찾는다. 본문에 같은 내용이 어순·동의어 수준으로 다시 나오면 **재진술**이다 → 정답을 본문에 없는 다른 특징(동작 결과·비교·세대 차이·다른 속성)으로 교체한다. (`generation-contract.md` §1 AP-09)
+   - **주관식**: 본문이 정답 용어의 정의 또는 기능·역할을 그대로 풀어 쓰고 있으면 → 본문을 구체적 장면·수치·로그·증상으로 교체한다. 발문이 정답이 속한 계층·범주를 직접 부르면 큰 갈래로 낮춘다. (`generation-contract.md` §1·§2 INV-1·INV-2)
    - **공통(본문 삭제 테스트)**: 본문을 지워도 타겟층이 정답을 하나로 고를 수 있으면 본문이 일을 안 한 것 → 본문이 정답을 결정하도록 고친다.
 5. `learning-content-sql-template.md` 템플릿에 따라 INSERT SQL을 구성, **output_path**에 Write
    - 첫 INSERT는 **staging_label**이며 **id**는 **id_allocation.label_start**, **label**·**unit_id**는 입력 인자를 그대로 사용한다.

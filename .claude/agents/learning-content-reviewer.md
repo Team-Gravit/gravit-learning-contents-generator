@@ -11,9 +11,7 @@ model: sonnet
 
 ## 참조 파일
 - `.claude/spec/review/review-rubric.md`
-- `.claude/spec/generation/learning-content-rules.md`
-- `.claude/spec/generation/learning-content-writing-style.md`
-- `.claude/spec/generation/problem-antipatterns.md`
+- `.claude/spec/generation/generation-contract.md`
 
 ## 절차
 1. 참조 파일을 모두 Read
