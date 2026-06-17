@@ -11,6 +11,7 @@
 ### 참조 파일
 - `.claude/spec/generation/learning-content-sql-schema.md` — **_staging** 테이블 정의
 - `pipeline-workspace/generation-output/{오늘 날짜}/{unit_id}/lesson.sql` — 적재 입력
+- `.claude/scripts/token-report.sh` — 이 실행의 토큰 사용량 집계
 
 ### 절차
 1. **Checklist**에서 **phase_6**가 ✅ 또는 ⏭인 유닛을 모두 수집한다.
@@ -23,6 +24,11 @@
    - **status** → **COMPLETED**(모든 유닛 처리 성공 시) / **FAILED**(일부 유닛 실패 시)
 5. **Log**에 다음과 같이 작성한다.
    - **- {ISO8601} [phase_7] loaded to staging for units {성공 유닛 목록}, failed {실패 유닛 목록}**
+6. **토큰 사용량 기록.** 아래를 실행하고, 출력된 `## Token Usage` 블록을 **pipeline-state**에 추가한다(이미 있으면 교체).
+   - `bash .claude/scripts/token-report.sh pipeline-workspace/.tokmark-{오늘 날짜}-{seq} {target_units 개수}`
+   - **units** 인자는 **Meta.target_units**의 개수다.
+   - 스크립트가 `total_tokens: unavailable`을 반환해도 그대로 기록하고 진행한다(파이프라인 중단 금지).
+   - 기록 후 마커를 정리한다: `rm -f pipeline-workspace/.tokmark-{오늘 날짜}-{seq}`.
 
 ### 출력
 없음
