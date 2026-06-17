@@ -13,10 +13,8 @@ allowed-tools: Read, Write, Edit, Glob, Bash
 - `.claude/spec/review/review-rubric.md` — R1~R6 의미 (필요 시)
 
 원인 연결이 가리키는 생성 스펙(제안·적용 시 Read):
-- `.claude/spec/generation/learning-content-rules.md`
+- `.claude/spec/generation/generation-contract.md`
 - `.claude/spec/generation/learning-content-writing-style.md`
-- `.claude/spec/generation/problem-good-patterns.md`
-- `.claude/spec/generation/problem-antipatterns.md`
 
 ### 절차
 

@@ -43,34 +43,32 @@ description: 검수 결과(review.md)와 과정에서 걸린 부분(pipeline-sta
 
 | 감점 신호 | 1차 책임 규칙 | 책임 스펙 파일 | 비고 |
 |---|---|---|---|
-| R1 정답 정확성 | INV-3 | (체계적이면) rules / 주관식은 antipatterns AP-08 | 대개 생성 슬립 — 1순위는 Phase 5 재시도 |
-| R2 선지 변별력 | INV-4 / AP-02·AP-07·AP-03 | rules · antipatterns · good-patterns | 객관식만 |
-| R3 난이도 적절성 | 문제 생성 기준 | rules | |
-| R4 본문기능성·발문 | INV-1·INV-2·INV-6 / AP-01·AP-04·AP-06 | rules · antipatterns · good-patterns | |
-| R5 해설 충실도 | EXP-1~EXP-4 / AP-05 | rules · antipatterns · good-patterns | |
-| R6 난이도 균형 | 문제 생성 기준(다양성·정답위치 분산·난이도 분포) | rules | 레슨 단위 |
+| R1 정답 정확성 | INV-3 | (체계적이면) 생성 계약서 / 주관식은 §5 AP-08 | 대개 생성 슬립 — 1순위는 Phase 5 재시도 |
+| R2 선지 변별력 | INV-4 / AP-02·AP-07·AP-03 | 생성 계약서 §4 | 객관식만 |
+| R3 난이도 적절성 | 문제 생성 기준 | 생성 계약서 §7 | |
+| R4 본문기능성·발문 | INV-1·INV-2·INV-6 / AP-01·AP-04·AP-06 | 생성 계약서 §1·§4 | |
+| R5 해설 충실도 | EXP-1~EXP-4 / AP-05 | 생성 계약서 §6 | |
+| R6 난이도 균형 | 문제 생성 기준(다양성·정답위치 분산·난이도 분포) | 생성 계약서 §7 | 레슨 단위 |
 | S 표기·용어 | S1~S6 | writing-style | R항목 외, 자유서술에서만 수집 |
-| VALIDATOR:varchar | 분량 한도 인지 | rules · writing-style · sql-schema | 255자 한도 반복 위반 → 분량 가이드 보강 |
-| VALIDATOR:structure | 구조·개수·FK·순서 | sql-template · rules | 템플릿/구조 규칙 명확화 |
+| VALIDATOR:varchar | 분량 한도 인지 | 생성 계약서 · writing-style · sql-schema | 255자 한도 반복 위반 → 분량 가이드 보강 |
+| VALIDATOR:structure | 구조·개수·FK·순서 | sql-template · 생성 계약서 | 템플릿/구조 규칙 명확화 |
 | VALIDATOR:idrange | ID 발번 | id-management | |
 | VALIDATOR:quote | 이스케이프 | sql-template | 이스케이프 규칙 강화 |
 | HUMAN | 사람 교정 대상에 따름 | (교정이 가리키는 스펙) | 최고 신뢰 신호 — 무엇을 고쳤는지로 원인 연결 |
 
 파일 경로:
-- rules → `.claude/spec/generation/learning-content-rules.md`
+- 생성 계약서 → `.claude/spec/generation/generation-contract.md`
 - writing-style → `.claude/spec/generation/learning-content-writing-style.md`
-- good-patterns → `.claude/spec/generation/problem-good-patterns.md`
-- antipatterns → `.claude/spec/generation/problem-antipatterns.md`
 - sql-template → `.claude/spec/generation/learning-content-sql-template.md`
 - sql-schema → `.claude/spec/generation/learning-content-sql-schema.md`
 - id-management → `.claude/spec/generation/id-management.md`
 
 한 신호가 여러 파일을 가리키면, 어느 파일을 고칠지는 제안 단계에서 패턴의 성격으로 좁힌다.
 
-- "오답이 터무니없어 소거된다" → antipatterns(AP-02) 보강
-- "정답만 길어 새어 나간다" → antipatterns(AP-07) 보강
-- "규칙은 있는데 예시가 없어 못 따라 한다" → good-patterns에 해당 유형 예시 추가
-- "규칙 자체가 약하거나 모호하다" → rules의 해당 INV/EXP 강화
+- "오답이 터무니없어 소거된다" → 생성 계약서 §4(AP-02) 보강
+- "정답만 길어 새어 나간다" → 생성 계약서 §4(AP-07) 보강
+- "규칙은 있는데 예시가 없어 못 따라 한다" → 생성 계약서 해당 절의 "좋은 예" 추가
+- "규칙 자체가 약하거나 모호하다" → 생성 계약서 해당 절의 INV/EXP 강화
 
 ---
 
@@ -102,4 +100,4 @@ description: 검수 결과(review.md)와 과정에서 걸린 부분(pipeline-sta
 - **변경 전 → 변경 후**: 반영할 구체 텍스트
 - **기대 효과**
 
-제안은 **1번부터 넘버링**한다. 적용은 사용자가 지정한 번호에 한한다. 새 안티패턴을 추가할 때는 `problem-antipatterns.md`의 기존 **AP-NN** 번호를 이어서 발번한다.
+제안은 **1번부터 넘버링**한다. 적용은 사용자가 지정한 번호에 한한다. 새 안티패턴을 추가할 때는 `generation-contract.md` 해당 절 "피하라"의 기존 **AP-NN** 번호를 이어서 발번한다.

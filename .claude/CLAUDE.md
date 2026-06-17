@@ -21,12 +21,10 @@ Gravit CS 학습 콘텐츠(lesson / problem / option / answer) 자동 생성 파
 각 스펙은 SoT 문서로 `.claude/spec/` 하위에 있다. skill / agent / hook이 **필요 시점에 Read로 로드**한다.
 
 **generation/** — 콘텐츠 생성 규범
-- `.claude/spec/generation/learning-content-rules.md` — 콘텐츠 구성 규칙 (INV·EXP 원칙)
+- `.claude/spec/generation/generation-contract.md` — 문제 생성 규범 SoT (INV·EXP 원칙 + 모범 예시 + 안티패턴 통합)
 - `.claude/spec/generation/learning-content-writing-style.md` — 한국어 표기·CS 용어·일관성 스타일 규칙
 - `.claude/spec/generation/learning-content-sql-schema.md` — DB 테이블 스키마 (prod + **_staging**)
 - `.claude/spec/generation/learning-content-sql-template.md` — INSERT 쿼리 템플릿·이스케이프 규칙
-- `.claude/spec/generation/problem-good-patterns.md` — 모범 예시 (few-shot)
-- `.claude/spec/generation/problem-antipatterns.md` — 피해야 할 안티패턴 (생성 회피 + 검수 탐지)
 - `.claude/spec/generation/id-management.md` — ID 발번 규칙
 
 **review/** — 채점 기준

@@ -44,6 +44,13 @@ current_phase: 0
 
 ## Log
 - {ISO8601} [phase_{n}] {event}
+
+## Token Usage
+- units: {n}
+- total_tokens: {n}
+- per_unit: {n}
+- breakdown: in={n} out={n} cache_read={n} cache_create={n} fresh={n}
+- measured_at: {ISO8601}
 ````
 
 ---
@@ -73,6 +80,16 @@ current_phase: 0
 | `HUMAN` | 사람이 직접 교정 | Phase 6 |
 
 각 phase가 무엇을 기록하는지는 해당 phase 파일이 정의한다.
+
+### Token Usage
+
+`## Token Usage`는 Phase 7에서 이 실행이 쓴 토큰을 Claude Code 트랜스크립트에서 집계해 기록한다(`.claude/scripts/token-report.sh`). 트랜스크립트 내부 포맷에 의존하므로 best-effort다.
+
+- **total_tokens**: all-in 합(input + output + cache_read + cache_create).
+- **fresh**(breakdown): input + cache_create. cache_read는 ~10× 저렴하므로 비용·실행간 비교에는 total보다 fresh가 신뢰도가 높다.
+- **per_unit**: total_tokens ÷ units(= Meta.target_units 개수).
+- **scope**: 이 실행의 서브에이전트(생성·검수·재시도) + 메인루프 해당 구간.
+- 측정 실패 시 `total_tokens: unavailable`로 남기고 파이프라인은 진행한다.
 
 ### 상태 기호
 - ✅ 완료
