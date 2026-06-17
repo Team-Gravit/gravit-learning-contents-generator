@@ -1,6 +1,6 @@
 ## 📌 목적
 
-**Gravit** 서비스의 CS 학습 콘텐츠(**문제**·**정답**·**선지**) 생성을 자동화하는 인프라다. 사람이 반복하던 **문제 생성 → 검수 → DB 적재** 워크플로우를, **Claude Code**의 Subagent·Skill·Hook을 엮어 한 번의 스킬 호출(`/generate-learning-content`)로 끝까지 실행한다.
+**Gravit** 서비스의 CS 학습 콘텐츠(**문제**·**정답**·**선지**) 생성을 자동화하는 인프라다. 사람이 반복하던 **문제 생성 → 검수 → DB 저장** 워크플로우를, **Claude Code**의 Subagent·Skill·Hook을 엮어 한 번의 스킬 호출(`/generate-learning-content`)로 끝까지 실행한다.
 
 단발성 LLM 호출이 아니라, 상태 추적·정량 검수 루브릭·피드백 루프·compaction 복구까지 갖춰 **수백 유닛을 일관된 품질로 돌리는 하네스 엔지니어링(Harness engineering)** 아키텍처를 지향한다.
 
@@ -15,7 +15,7 @@
 - **작업은 서브에이전트로 격리·병렬화한다.** 유닛 간 교차 오염 없이 병렬로 생성하고, 검수는 read-only로 정답을 직접 풀어 본 뒤 독립적으로 채점한다.
 - **검수는 정량 기준 + 피드백 루프로 고정한다.** 점수화된 합격/재시도 루프로 품질을 수렴시키고, 한계를 넘는 항목은 사람과 합의해 마무리한다.
 - **상태와 산출물은 디스크에 고정한다.** 세션이 끊겨도 미완료 지점부터 재개하고, 에이전트 사이에는 텍스트가 아니라 파일 경로가 오간다.
-- **검증을 통과한 뒤 staging에만 적재한다.** 구조와 무결성을 강제로 검증한 다음, 운영과 분리된 staging 영역에만 쓴다.
+- **검증을 통과한 뒤 staging에만 저장한다.** 구조와 무결성을 강제로 검증한 다음, 운영과 분리된 staging 영역에만 쓴다.
 
 ---
 
@@ -25,14 +25,14 @@
 [/generate-learning-content {unit_ids} 호출]
     │
     ├─ Phase 0. 복구 확인 (메인 세션)
-    │   ├─ pipeline-state-{날짜}.md 없음 → Phase 1
+    │   ├─ pipeline-state-{날짜}-{seq}.md (IN_PROGRESS) 없음 → Phase 1
     │   └─ 있음 → Checklist에서 미완료 가장 이른 phase를 resume_phase로 결정
     │       └─ resume_phase > 2 → fetch-max-id만 재호출해 ID Baseline 갱신
     │          (concept-note / existing-problems 캐시는 재사용)
     │
     ├─ Phase 1. 계획 수립 (메인 세션)
     │   ├─ 유닛 ID 파싱
-    │   └─ pipeline-state-{날짜}.md 생성 (Meta + Checklist 초기화)
+    │   └─ pipeline-state-{날짜}-{seq}.md 생성 (Meta + Checklist 초기화)
     │
     ├─ Phase 2. 데이터 수집 (메인 세션)
     │   ├─ /fetch-cs-note → concept-note.md
@@ -40,14 +40,14 @@
     │   ├─ fetch-max-id → ID Baseline 확정
     │   └─ pipeline-state 업데이트
     │
-    ├─ Phase 3. 콘텐츠 생성 (서브에이전트 병렬, context: fork)
-    │   ├─ [재실행 가드] 기존 lesson.sql 존재 시 [덮어쓰기 / 보존 후 skip] 확인
+    ├─ Phase 3. 콘텐츠 생성 (서브에이전트 병렬)
+    │   ├─ [재실행 방지] 기존 lesson.sql 존재 시 [덮어쓰기 / 보존 후 skip] 확인
     │   ├─ [Unit A] learning-content-generator → lesson.sql (1 lesson, 6문제)
     │   ├─ [Unit B] learning-content-generator → lesson.sql
     │   └─ ...
     │
-    ├─ Phase 4. 콘텐츠 검수 (서브에이전트 병렬, context: fork, read-only)
-    │   ├─ [재실행 가드] 기존 review.md 존재 시 [덮어쓰기 / 보존 후 skip] 확인
+    ├─ Phase 4. 콘텐츠 검수 (서브에이전트 병렬, 정답 직접 풀이)
+    │   ├─ [재실행 방지] 기존 review.md 존재 시 [덮어쓰기 / 보존 후 skip] 확인
     │   ├─ learning-content-reviewer → 각 문제 직접 풀이
     │   ├─ R1~R6 항목별 1~5점 채점 → PASS/REJECT 판정 → review.md
     │   ├─ 모두 PASS → ☞ Phase 7 (5·6 건너뜀)
@@ -64,7 +64,7 @@
     │   ├─ 태깅된 항목별 수정안 제시 → OK 응답 시 lesson.sql 반영
     │   └─ 모두 해소되면 Manual Review 비움
     │
-    ├─ Phase 7. staging 적재
+    ├─ Phase 7. staging 저장
     │   ├─ .env의 DATABASE_URL 로드
     │   ├─ psql --single-transaction -f lesson.sql → _staging 테이블
     │   └─ pipeline-state 최종 상태: COMPLETED
@@ -79,10 +79,10 @@
 ```
 프로젝트 루트/
 ├── .claude/
-│   ├── CLAUDE.md                              ← 항상 로드되는 최소 지침 (pipeline-state 경로, spec 인덱스)
+│   ├── CLAUDE.md                              ← 항상 로드되는 최소 지침 (pipeline-state 경로·복구 규칙, spec 인덱스)
 │   ├── agents/
-│   │   ├── learning-content-generator.md      ← 콘텐츠 생성 서브에이전트 (context: fork)
-│   │   └── learning-content-reviewer.md       ← 콘텐츠 검수 서브에이전트 (context: fork, read-only)
+│   │   ├── learning-content-generator.md      ← 콘텐츠 생성 서브에이전트 (model: opus)
+│   │   └── learning-content-reviewer.md       ← 콘텐츠 검수 서브에이전트 (model: sonnet, 정답 직접 풀이)
 │   ├── skills/
 │   │   ├── generate-learning-content/
 │   │   │   ├── SKILL.md                       ← 진입점 스킬 (Phase 0~7 오케스트레이션)
@@ -95,42 +95,51 @@
 │   │   │       ├── phase-5-feedback-loop.md
 │   │   │       ├── phase-6-manual-review.md
 │   │   │       └── phase-7-staging-load.md
+│   │   ├── assess-learning-content-quality/
+│   │   │   └── SKILL.md                       ← 실행 단위 종합 채점·감점 원인 연결·스펙 개선 제안
 │   │   ├── fetch-cs-note/
 │   │   │   └── SKILL.md                       ← 유닛 개념노트 조회
 │   │   ├── fetch-existing-learning-contents/
 │   │   │   └── SKILL.md                       ← 유닛의 기존 문제 SQL 수집 (중복 방지용)
-│   │   └── fetch-max-id/
-│   │       └── SKILL.md                       ← lesson/problem/option/answer MAX ID 조회
+│   │   ├── fetch-max-id/
+│   │   │   └── SKILL.md                       ← lesson/problem/option/answer·staging_label MAX ID 조회
+│   │   ├── open-issue/
+│   │   │   └── SKILL.md                       ← 이슈 템플릿 규격으로 GitHub 이슈 생성
+│   │   └── open-pr/
+│   │       └── SKILL.md                       ← PR 템플릿 규격으로 GitHub PR 생성
 │   ├── hooks/
 │   │   ├── notify-complete.sh                 ← Stop 이벤트: 완료 Webhook 알림
 │   │   └── notify-permission.sh               ← Notification 이벤트: 권한 요청 알림
 │   ├── scripts/
 │   │   ├── validate-lesson-structure.py       ← 레슨 구조(문제 수·선지 수·정답 수) 검증
-│   │   └── validate-lesson-sql.py             ← INSERT 쿼리 무결성·ID 연속성·따옴표 검증
+│   │   ├── validate-lesson-sql.py             ← INSERT 쿼리 무결성·ID 연속성·따옴표·길이 한도 검증
+│   │   └── token-report.sh                    ← 실행당 토큰 사용량 집계 → pipeline-state의 Token Usage 블록
+│   ├── rules/
+│   │   └── git-convention.md                  ← 커밋·브랜치·PR Git 규칙 (.github/** 적용)
 │   ├── spec/                                  ← SoT spec 문서 (skill/agent가 필요 시점에 Read)
 │   │   ├── generation/                        ← 콘텐츠 생성에 쓰이는 규범
-│   │   │   ├── learning-content-rules.md      ← 콘텐츠 구성 규칙 (INV·EXP 원칙 포함)
+│   │   │   ├── generation-contract.md         ← 생성 규범 SoT (INV·EXP 원칙 + 모범 예시 + 안티패턴 통합)
 │   │   │   ├── learning-content-writing-style.md  ← 한국어 표기·CS 용어·일관성 스타일 규칙
 │   │   │   ├── learning-content-sql-schema.md ← DB 테이블 스키마 (prod + _staging)
 │   │   │   ├── learning-content-sql-template.md   ← INSERT 쿼리 템플릿·이스케이프 규칙
-│   │   │   ├── problem-good-patterns.md       ← 따라 만들 모범 예시 (few-shot)
-│   │   │   ├── problem-antipatterns.md        ← 피해야 할 안티패턴 (생성 회피 + 검수 탐지)
-│   │   │   └── id-management.md               ← ID 발번 규칙
+│   │   │   └── id-management.md               ← ID 부여 규칙
 │   │   ├── review/                            ← 채점에 쓰이는 기준
-│   │   │   ├── review-rubric.md               ← 검수 루브릭 (R1~R6 채점 기준)
-│   │   │   └── review-template.md             ← 검수 출력 템플릿
+│   │   │   ├── review-rubric.md               ← 검수 루브릭 (R1~R6 채점 기준) + 검수 출력 템플릿
+│   │   │   └── deduction-attribution.md       ← 감점→스펙 원인 연결표·종합 점수 산식 (assess 스킬용)
 │   │   └── pipeline/
 │   │       └── pipeline-state-template.md     ← pipeline-state 파일 스키마
 │   └── settings.local.json
 │
-└── pipeline-workspace/
-    ├── pipeline-state-{YYYY-MM-DD}.md         ← 파이프라인 상태 추적 파일
+└── pipeline-workspace/                        ← 파이프라인 산출물 (gitignored)
+    ├── pipeline-state-{YYYY-MM-DD}-{seq}.md   ← 실행별 상태 추적 파일 (seq = 같은 날 N번째 실행)
+    ├── .tokmark-{YYYY-MM-DD}-{seq}            ← Phase 1 토큰 집계 시작 마커 (Phase 7에서 정리)
     ├── fetch-cache/{YYYY-MM-DD}/{unit_id}/
     │   ├── concept-note.md                    ← Phase 2: fetch-cs-note 산출물
     │   └── existing-problems.sql              ← Phase 2: fetch-existing-learning-contents 산출물
     ├── generation-output/{YYYY-MM-DD}/{unit_id}/
     │   └── lesson.sql                         ← Phase 3/5/6: generator + manual-review 최종 SQL
     ├── review-output/{YYYY-MM-DD}/{unit_id}/
-    │   └── review.md                          ← Phase 4/5: reviewer 채점 결과
-    └── problem-seed/                          ← 초기 시드 문제 SQL (유닛별 레퍼런스)
+    │   ├── review.md                          ← Phase 4/5: reviewer 채점 결과
+    │   └── retry-log.md                       ← Phase 5: 유닛별 재시도 로그
+    └── problem-seed/{topic}/unit-{NN}.sql     ← 초기 시드 문제 SQL (보존 자산, 중복 회피 수집 대상 아님)
 ```
