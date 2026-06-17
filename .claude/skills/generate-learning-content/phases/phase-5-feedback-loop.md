@@ -1,7 +1,7 @@
 ## Phase 5. 피드백 루프
 
 ### 목적
-Phase 4에서 REJECT 판정된 학습 컨텐츠에 대해 **learning-content-generator**를 재호출하고, **learning-content-reviewer**를 호출해 재검수한다.
+Phase 4에서 REJECT 판정된 학습 콘텐츠에 대해 **learning-content-generator**를 재호출하고, **learning-content-reviewer**를 호출해 재검수한다.
 
 3회의 재시도 안에 PASS로 전환되지 않으면, 해당 항목을 **manual-review**로 태깅한다.
 
@@ -34,7 +34,7 @@ Phase 4에서 REJECT 판정된 학습 컨텐츠에 대해 **learning-content-gen
          - **lesson_sql_path** → `pipeline-workspace/generation-output/{오늘 날짜}/{unit_id}/lesson.sql`
          - **concept_note_path** → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md`
          - **existing_problems_path** → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.sql`
-     - **learning-content-generator 반환값 확인.** 반환값이 `OK`일 때만 reviewer로 진행한다. 반환값이 `FAIL`(검증기 stderr)이면 재생성 SQL이 무효이므로 reviewer로 넘기지 않고, **같은 인자로 generator를 최대 3회 재호출**해 `OK`를 받을 때까지 시도한다. 이때의 검증기 사유는 Phase 3 step 7과 같은 버킷 규칙으로 **Observations**(`phase`=5, `scope`=`-`, `signal`=`VALIDATOR:*`)에 기록한다. 3회 내 `OK`를 못 받으면 해당 항목을 **manual-review**로 태깅한다(사유: `generator 검증 실패`).
+     - **learning-content-generator 반환값 확인.** 반환값이 `OK`일 때만 reviewer로 진행한다. 반환값이 `FAIL`(검증기 stderr)이면 재생성 SQL이 무효이므로 reviewer로 넘기지 않고, **같은 인자로 generator를 최대 3회 재호출**해 `OK`를 받을 때까지 시도한다. 이때의 검증기 사유는 Phase 3 step 7과 같은 범주 규칙으로 **Observations**(`phase`=5, `scope`=`-`, `signal`=`VALIDATOR:*`)에 기록한다. 3회 내 `OK`를 못 받으면 해당 항목을 **manual-review**로 태깅한다(사유: `generator 검증 실패`).
      - generator가 `OK`를 반환한 뒤, **learning-content-reviewer**를 아래 인자로 재호출하여 `review.md`를 업데이트한다.
        - **lesson_sql_path** → `pipeline-workspace/generation-output/{오늘 날짜}/{unit_id}/lesson.sql`
        - **review_output_path** → `pipeline-workspace/review-output/{오늘 날짜}/{unit_id}/review.md`
@@ -50,7 +50,7 @@ Phase 4에서 REJECT 판정된 학습 컨텐츠에 대해 **learning-content-gen
    - **Checklist**의 모든 유닛의 **phase_5** → ✅
 5. **Log**에 다음과 같이 작성한다.
    - **- {ISO8601} [phase_5] resolved {통과 항목 수}, manual-review {미해소 항목 수}**
-6. **Observations 기록 · 재시도 로그 영속화.**
+6. **Observations 기록 · 재시도 로그 저장.**
    - 유닛별 재시도 로그(세션 보유 표)를 `pipeline-workspace/review-output/{오늘 날짜}/{unit_id}/retry-log.md`로 저장한다(레슨 블록 + 문제 블록 전체).
    - 각 재시도 항목에 대해, 재시도에서 등장한 signal별로 **pipeline-state**의 **Observations**에 롤업 행을 쓴다. `phase`=5, `scope`=문제 ref 또는 `lesson`, `signal`=`R{n}`/`AP-NN`, `n`=그 코드가 등장한 시도 수, `note`=최종 결과(`healed` 또는 `manual-review`).
 

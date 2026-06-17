@@ -25,7 +25,7 @@ Gravit CS 학습 콘텐츠(lesson / problem / option / answer) 자동 생성 파
 - `.claude/spec/generation/learning-content-writing-style.md` — 한국어 표기·CS 용어·일관성 스타일 규칙
 - `.claude/spec/generation/learning-content-sql-schema.md` — DB 테이블 스키마 (prod + **_staging**)
 - `.claude/spec/generation/learning-content-sql-template.md` — INSERT 쿼리 템플릿·이스케이프 규칙
-- `.claude/spec/generation/id-management.md` — ID 발번 규칙
+- `.claude/spec/generation/id-management.md` — ID 부여 규칙
 
 **review/** — 채점 기준
 - `.claude/spec/review/review-rubric.md` — R1~R6 검수 루브릭 + 검수 출력 템플릿

@@ -1,7 +1,7 @@
-## Phase 7. staging 적재
+## Phase 7. staging 저장
 
 ### 목적
-각 유닛의 `lesson.sql`을 운영 데이터베이스의 **_staging** 테이블에 적재한다.
+각 유닛의 `lesson.sql`을 운영 데이터베이스의 **_staging** 테이블에 저장한다.
 
 ### 선행 조건
 - **pipeline-state**의 **Checklist.phase_6**가 모두 ✅ 또는 ⏭ 이다 (Phase 6 실행 또는 건너뜀).
@@ -10,7 +10,7 @@
 
 ### 참조 파일
 - `.claude/spec/generation/learning-content-sql-schema.md` — **_staging** 테이블 정의
-- `pipeline-workspace/generation-output/{오늘 날짜}/{unit_id}/lesson.sql` — 적재 입력
+- `pipeline-workspace/generation-output/{오늘 날짜}/{unit_id}/lesson.sql` — 저장 입력
 - `.claude/scripts/token-report.sh` — 이 실행의 토큰 사용량 집계
 
 ### 절차

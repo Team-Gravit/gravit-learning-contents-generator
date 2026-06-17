@@ -15,7 +15,7 @@
 - `.claude/spec/generation/id-management.md`
 
 ### 절차
-1. **재실행 가드.** 유닛별 `pipeline-workspace/generation-output/{오늘 날짜}/{unit_id}/lesson.sql` 파일이 이미 존재하는지 확인한다. 존재하는 유닛이 하나 이상이면, 해당 유닛 목록을 사용자에게 제시하고 `[덮어쓰기 / 보존하고 skip]` 중 선택을 받는다.
+1. **재실행 방지.** 유닛별 `pipeline-workspace/generation-output/{오늘 날짜}/{unit_id}/lesson.sql` 파일이 이미 존재하는지 확인한다. 존재하는 유닛이 하나 이상이면, 해당 유닛 목록을 사용자에게 제시하고 `[덮어쓰기 / 보존하고 skip]` 중 선택을 받는다.
    - **덮어쓰기** → 해당 유닛도 생성 대상에 포함한다.
    - **보존하고 skip** → 해당 유닛은 이번 Phase 3에서 제외하고 **Checklist.phase_3 = ✅**를 유지한다.
 2. 타겟 유닛별로 ID의 범위를 사전에 할당한다. `id-management.md`의 **Lesson 1개당 ID 소비량**과 **ID Baseline**을 참고하여 각 유닛에 배정한다. **보존하고 skip** 처리된 유닛은 ID 할당에서 제외한다.
@@ -33,7 +33,7 @@
    - **Checklist**의 각 유닛의 **phase_3** → ✅(검증 성공 시) / ❌(검증 실패) / 이전 ✅ 유지(보존하고 skip)
 6. **Log**에 다음과 같이 작성한다.
    - **- {ISO8601} [phase_3] generated lessons for units {성공 유닛 목록}, preserved {skip 유닛 목록}, failed {실패 유닛 목록}**
-7. **Observations 기록.** 생성 중(재시도 포함) generator 서브에이전트가 **FAIL**을 반환한 적이 있으면(최종 성공 여부와 무관), 반환된 stderr를 아래 버킷으로 분류해 유닛별로 **pipeline-state**의 **Observations**에 기록한다. `phase`=3, `scope`=`-`, `n`=그 버킷이 FAIL에 등장한 시도 수, `note`=대표 사유 1줄.
+7. **Observations 기록.** 생성 중(재시도 포함) generator 서브에이전트가 **FAIL**을 반환한 적이 있으면(최종 성공 여부와 무관), 반환된 stderr를 아래 범주로 분류해 유닛별로 **pipeline-state**의 **Observations**에 기록한다. `phase`=3, `scope`=`-`, `n`=그 범주가 FAIL에 등장한 시도 수, `note`=대표 사유 1줄.
    - `varchar` / `> {N}자` → `VALIDATOR:varchar`
    - `INSERT 순서` / `INSERT 블록` / `label 불일치` / `≠ lesson.id` / `OBJECTIVE 문제가 아님` / `SUBJECTIVE 문제가 아님` / `개수: expected` / `필드 부족` → `VALIDATOR:structure`
    - `ID 연속성` / `ID 중복` → `VALIDATOR:idrange`

@@ -4,7 +4,7 @@ description: Gravit 서비스의 학습 콘텐츠 관련 테이블 스키마. pr
 
 ## 학습 콘텐츠 SQL 스키마
 
-> **길이 한도 주의.** 아래 `VARCHAR(n)` 컬럼은 운영 DB가 실제로 강제하는 한도다(문자 수 기준). 한도를 넘기면 `validate-lesson-sql.py`는 통과하더라도 **Phase 7 적재 시 `value too long for type character varying(n)`으로 실패**한다. 본문(`problem.content`)·정답 해설(`answer.explanation`)만 `TEXT`(무제한)이고, 제목·발문·선지 내용·선지 해설·정답 내용은 모두 **255자**, `label`은 **32자**다. 생성 시 특히 **선지 해설(option.explanation)**이 한도를 넘기기 쉬우니 255자 안쪽으로 쓴다.
+> **길이 한도 주의.** 아래 `VARCHAR(n)` 컬럼은 운영 DB가 실제로 강제하는 한도다(문자 수 기준). 한도를 넘기면 `validate-lesson-sql.py`는 통과하더라도 **Phase 7 저장 시 `value too long for type character varying(n)`으로 실패**한다. 본문(`problem.content`)·정답 해설(`answer.explanation`)만 `TEXT`(무제한)이고, 제목·발문·선지 내용·선지 해설·정답 내용은 모두 **255자**, `label`은 **32자**다. 생성 시 특히 **선지 해설(option.explanation)**이 한도를 넘기기 쉬우니 255자 안쪽으로 쓴다.
 
 ### prod 테이블
 
@@ -57,7 +57,7 @@ description: Gravit 서비스의 학습 콘텐츠 관련 테이블 스키마. pr
 
 | 컬럼        | 타입                                  | 설명                                              |
 |-------------|---------------------------------------|---------------------------------------------------|
-| id          | BIGINT PK                             | 라벨 식별자 (외부 발번 — **fetch-max-id** baseline 기반) |
+| id          | BIGINT PK                             | 라벨 식별자 (외부 부여 — **fetch-max-id** baseline 기반) |
 | label       | VARCHAR(32) UNIQUE NOT NULL           | 라벨 값 (**YYYY-MM-DD-{4자}**)                      |
 | unit_id     | BIGINT NOT NULL                       | 유닛 식별자                                       |
 | description | VARCHAR(255) NOT NULL                 | **Unit {unit_id} - 신규 lesson 1건**                |

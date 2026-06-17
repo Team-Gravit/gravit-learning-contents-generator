@@ -8,8 +8,8 @@ description: 학습 콘텐츠 생성 시 lesson/problem/option/answer ID 부여 
 
 Phase 2에서 **fetch-max-id** 스킬로 MAX ID를 확인하고 pipeline-state에 기록하라. 매 작업 시작 시 반드시 fetch하라. 캐시된 값을 재사용하지 마라.
 
-- baseline은 **prod 테이블과 _staging 테이블의 통합 MAX**(GREATEST)다. prod만 보면 아직 promote되지 않은 staging 잔여 배치와 ID가 겹쳐 적재 시 PK 충돌이 난다.
-- 파이프라인이 발번한 staging ID는 prod로 그대로 옮겨지지 않는다. promote API가 prod 시퀀스로 새 ID를 발번해 리매핑하므로, 여기서 지켜야 할 제약은 **staging 테이블 안에서의 PK 유일성**이다.
+- baseline은 **prod 테이블과 _staging 테이블의 통합 MAX**(GREATEST)다. prod만 보면 아직 promote되지 않은 staging의 남은 배치와 ID가 겹쳐 저장 시 PK 충돌이 난다.
+- 파이프라인이 부여한 staging ID는 prod로 그대로 옮겨지지 않는다. promote API가 prod 시퀀스로 새 ID를 부여해 리매핑하므로, 여기서 지켜야 할 제약은 **staging 테이블 안에서의 PK 유일성**이다.
 
 ### pipeline-state 기록 형식
 

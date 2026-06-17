@@ -1,6 +1,6 @@
 ---
 name: generate-learning-content
-description: Gravit CS 학습 콘텐츠 생성 파이프라인 진입점. 유닛 ID를 받아 1 lesson(OBJECTIVE 4 + SUBJECTIVE 2) 생성·검수·staging 적재까지 수행. /generate-learning-content 호출 시 트리거.
+description: Gravit CS 학습 콘텐츠 생성 파이프라인 진입점. 유닛 ID를 받아 1 lesson(OBJECTIVE 4 + SUBJECTIVE 2) 생성·검수·staging 저장까지 수행. /generate-learning-content 호출 시 트리거.
 allowed-tools: Read, Write, Edit, Glob, Bash, Task, Skill
 ---
 
@@ -23,7 +23,7 @@ allowed-tools: Read, Write, Edit, Glob, Bash, Task, Skill
 | 4 | `phases/phase-4-review.md` | reviewer 서브에이전트로 R1~R6 채점 및 PASS/REJECT 판정 |
 | 5 | `phases/phase-5-feedback-loop.md` | REJECT 재생성 루프 (문제당 최대 3회), 초과 시 manual-review |
 | 6 | `phases/phase-6-manual-review.md` | manual-review 태깅 항목을 사용자와 대화로 해소 |
-| 7 | `phases/phase-7-staging-load.md` | 유닛별 lesson.sql을 **_staging** 테이블에 psql로 적재 |
+| 7 | `phases/phase-7-staging-load.md` | 유닛별 lesson.sql을 **_staging** 테이블에 psql로 저장 |
 
 **분기 요약**
 - Phase 4: 전부 PASS → **Phase 7** (5·6 건너뜀) / 하나라도 REJECT → Phase 5

@@ -5,9 +5,10 @@ allowed-tools: Bash
 ---
 
 ## fetch-max-id
+
 운영 데이터베이스에서 `lesson/problem/option/answer`는 **prod 테이블과 _staging 테이블의 통합 MAX**(GREATEST), **staging_label**은 자체 MAX ID를 조회하여 반환한다.
 
-prod만 조회하면 아직 promote되지 않은 staging 잔여 배치가 baseline에 반영되지 않아 Phase 7 적재 시 PK 충돌이 난다. 통합 MAX를 쓰면 staging 잔여물이 있어도, promote 후 정리돼도 항상 안전하다.
+prod만 조회하면 아직 promote되지 않은 staging의 남은 배치가 baseline에 반영되지 않아 Phase 7 저장 시 PK 충돌이 난다. 통합 MAX를 쓰면 staging에 남은 데이터가 있어도, promote 후 정리돼도 항상 안전하다.
 
 ### 입력
 없음

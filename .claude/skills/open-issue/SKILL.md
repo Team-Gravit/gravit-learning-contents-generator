@@ -29,7 +29,7 @@ allowed-tools: Bash(gh *), Read
 ## Phase 2: 제목·본문 작성
 
 1. `.github/ISSUE_TEMPLATE/{type}-issue-template.md`를 Read로 읽어 본문 구조(`1. Issue Description`, `2. Issue Task`)를 확인하라.
-2. 제목은 `{type}: {간결한 한 줄}` 형식으로 작성하라. (예: `feat: 학습 컨텐츠 평가 스킬 추가`)
+2. 제목은 `{type}: {간결한 한 줄}` 형식으로 작성하라. (예: `feat: 학습 콘텐츠 평가 스킬 추가`)
 3. 본문은 템플릿 구조를 그대로 따르되 **최대한 간결하게** 채워라.
    - `1. Issue Description` — 1~2문장.
    - `2. Issue Task` — 핵심 작업 체크박스 1~3개.

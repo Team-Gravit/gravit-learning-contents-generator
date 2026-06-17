@@ -1,12 +1,12 @@
 ---
 name: assess-learning-content-quality
-description: 한 번의 파이프라인 실행에서 생성된 레슨들을 종합 채점하고, 감점이 어느 스펙 탓인지 연결해 개선안을 넘버링으로 제안한다. 사용자가 번호로 고른 제안만 스펙에 반영한다. /assess-learning-content-quality 호출 시 트리거.
+description: 한 번의 파이프라인 실행에서 생성된 레슨들을 종합 채점하고, 감점이 어느 스펙 탓인지 연결해 개선안을 넘버링으로 제안한다. 사용자가 번호로 고른 제안만 스펙에 반영한다.
 allowed-tools: Read, Write, Edit, Glob, Bash
 ---
 
 ## assess-learning-content-quality
 
-생성된 학습 콘텐츠의 품질을 사후 회고하고, **반복되는 약점을 생성기 스펙에 반영해 다음 생성부터** 품질을 끌어올리는 메타 개선 도구다. 개별 레슨의 문제를 재생성하는 **Phase 5(콘텐츠 교정)** 와 달리, 이 스킬은 **스펙 파일(생성기의 규칙)** 을 고친다.
+생성된 학습 콘텐츠의 품질을 검증하고, 반복되는 약점을 spec에 반영하여 다음 생성부터의 품질을 높이는 도구이다.
 
 ### 참조 파일
 - `.claude/spec/review/deduction-attribution.md` — 종합 점수 산식·감점 신호·원인-스펙 연결표·체계적 판정·제안 작성 규칙 (이 스킬의 채점/원인 연결 SoT)

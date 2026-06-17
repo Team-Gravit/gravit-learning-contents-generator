@@ -26,7 +26,7 @@ allowed-tools: Read, Glob
   - **unit_id**는 zero-pad 없이 정수로 그대로 치환한다.
   - **unit_id = 1**일 때 최종 글롭: `pipeline-workspace/generation-output/*/1/*.sql`
 
-`pipeline-workspace/problem-seed/`는 수집 대상이 아니다. 시드 문제는 서비스에서 폐기되어 중복 회피 맥락에 포함하지 않는다 (파일은 자산으로 보존).
+`pipeline-workspace/problem-seed/`는 수집 대상이 아니다. 시드 문제는 서비스에서 더 이상 쓰이지 않아 중복 회피 맥락에 포함하지 않는다 (파일은 그대로 보관).
 
 #### Phase 2. 내용 연결
 수집된 각 파일을 읽어 "출력" 형식대로 연결해 표준 출력으로 내보낸다. 0건이면 **NO_EXISTING_CONTENT**.

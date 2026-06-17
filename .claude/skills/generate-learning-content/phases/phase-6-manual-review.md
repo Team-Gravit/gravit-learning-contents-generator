@@ -1,7 +1,7 @@
 ## Phase 6. manual-review 해소
 
 ### 목적
-Phase 5까지의 결과에서 **manual-review**로 태깅된 항목을 사용자와 대화로 순회하며 해소한다.
+Phase 5까지의 결과에서 **manual-review**로 태깅된 항목을 사용자와 대화로 하나씩 해소한다.
 
 ### 선행 조건
 - **pipeline-state**의 **Manual Review** 섹션에 하나 이상의 항목이 있다.
@@ -15,7 +15,7 @@ Phase 5까지의 결과에서 **manual-review**로 태깅된 항목을 사용자
 
 ### 절차
 1. **pipeline-state**의 **Manual Review** 항목을 순서대로 수집한다.
-2. 각 항목에 대해 아래 인터랙션을 사용자가 **OK**를 응답할 때까지 반복한다.
+2. 각 항목에 대해 아래 과정을 사용자가 **OK**를 응답할 때까지 반복한다.
    - 해당 유닛의 `lesson.sql`과 `review.md`를 읽는다.
    - 태깅된 블록(문제 또는 레슨)과 마지막 **reject_reasons**·**improvement_direction**을 근거로 수정안을 작성한다.
    - 사용자에게 제시한다. 형식은 아래와 같다.
