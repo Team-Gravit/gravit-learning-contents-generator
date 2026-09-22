@@ -106,45 +106,54 @@ REJECT (PASS 부정, 아래 중 하나라도 해당):
 
 ### 출력 형식
 
-검수 결과는 아래 구조로 보고한다. **reject_reasons**·**improvement_direction**은 **항목별 구조화 객체**로, generator 재호출 시 프롬프트에 항목별로 삽입 가능해야 한다. 평균 기준 미달 같은 합산 사유는 **avg** 키에 담는다. PASS 문제는 **reject_reasons**·**improvement_direction**을 null로 둔다.
+review.md는 아래 양식으로 작성한다. **점수는 6문제 모두** 남기고, **사유·개선 방향은 REJECT인 문제와 레슨에만** 남긴다. PASS 문제의 풀이 과정·확인 내용·참고 의견은 적지 않는다.
 
-#### 레슨 단위
+```markdown
+# Review — unit {unit_id} / lesson_id {lesson_id}
 
-| 항목 | 값 |
-|---|---|
-| R6 | **<1~5 정수>** |
-| verdict | **PASS** \| **REJECT** |
-| reject_reason | **<사유 문자열>** \| **null** |
-| improvement_direction | **<방향 문자열>** \| **null** |
+reject: {REJECT 문제 번호를 쉼표로 연결, 예: p3, p5 | 없음}
+lesson: {PASS | REJECT} (R6={1~5})
 
-#### 문제 단위
+| ref | type | R1 | R2 | R3 | R4 | R5 | avg | verdict |
+|---|---|---|---|---|---|---|---|---|
+| p1 | OBJECTIVE | 5 | 5 | 4 | 5 | 5 | 4.80 | PASS |
+| p3 | OBJECTIVE | 5 | 2 | 4 | 2 | 4 | 3.40 | REJECT |
+| p5 | SUBJECTIVE | 5 | - | 4 | 5 | 5 | 4.75 | PASS |
 
-문제마다 아래 블록을 반복한다.
+## lesson
 
-| 항목 | 값 |
-|---|---|
-| problem_ref | **p1** ~ **p6** |
-| problem_type | **OBJECTIVE** \| **SUBJECTIVE** |
-| avg | **<소수점 둘째 자리>** |
-| verdict | **PASS** \| **REJECT** |
-
-**점수**
-
-| R1 | R2 (객관식만) | R3 | R4 | R5 |
-|---|---|---|---|---|
-| **<1~5>** | **<1~5>** \| **-** | **<1~5>** | **<1~5>** | **<1~5>** |
-
-**reject_reasons** — 항목별 사유. PASS이면 생략(null).
+**reject_reasons**
 
 | 키 | 사유 |
 |---|---|
-| **<R코드 또는 avg>** | **<사유 문자열>** |
+| R6 | {사유} |
 
-**improvement_direction** — 항목별 개선 방향. PASS이면 생략(null).
+**improvement_direction**
 
 | 키 | 방향 |
 |---|---|
-| **<R코드>** | **<방향 문자열>** |
+| R6 | {쉽게 / 어렵게 / 분포 조정} |
+| p{n} | {그 문제를 어떻게 조정할지} |
+
+## p{n}
+
+**reject_reasons**
+
+| 키 | 사유 |
+|---|---|
+| {R코드 또는 avg} | {사유} |
+
+**improvement_direction**
+
+| 키 | 방향 |
+|---|---|
+| {R코드} | {방향} |
+```
+
+- **reject** 줄은 점수표에서 verdict가 **REJECT**인 문제 번호와 정확히 같아야 한다. REJECT가 없으면 **없음**.
+- 점수표는 p1~p6 6행을 모두 채운다(위 예시는 일부만 표시). 주관식의 R2는 **-**. avg는 적용 항목 평균, 소수점 둘째 자리.
+- **## lesson** 블록은 레슨이 REJECT일 때만 둔다. **## p{n}** 블록은 REJECT 문제마다 번호 순으로 하나씩 둔다. PASS는 블록을 만들지 않는다.
+- **reject_reasons**·**improvement_direction**은 R항목별로 한 행씩 적어, generator 재호출 시 항목별로 그대로 넘길 수 있게 한다. 평균 기준 미달 같은 합산 사유는 **avg** 키에 담는다.
 
 ---
 

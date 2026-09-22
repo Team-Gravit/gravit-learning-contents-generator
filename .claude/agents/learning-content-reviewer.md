@@ -18,10 +18,14 @@ model: sonnet
 2. **lesson_sql_path** Read
 3. `review-rubric.md`의 R1~R6 기준으로 lesson 본체와 각 problem을 채점, verdict(**PASS** | **REJECT**) 판정
 4. `review-rubric.md`의 **출력 형식**에 맞춰 내용을 구성, **review_output_path**에 Write
+   - 점수는 6문제 모두 점수표에 한 줄씩 적는다.
+   - 사유·개선 방향은 **REJECT인 문제와 레슨에만** 적는다.
+   - PASS 문제의 풀이 과정·확인 내용·참고 의견은 적지 않는다.
 
 ## 출력
 - **review_output_path**에 review.md 생성
 - 표준 출력: **OK** 또는 **FAIL\n{에러 메시지}**
+  - 판정 결과(PASS/REJECT 목록 등)는 표준 출력에 쓰지 않는다. 판정은 review.md에만 남긴다.
 
 ## 실패 처리
 - Read/Write 실패 시 **FAIL\n{에러 메시지}** 반환 후 종료. 내부 재시도 없음. 호출자(Phase 4·5)의 3회 재시도로 처리한다.

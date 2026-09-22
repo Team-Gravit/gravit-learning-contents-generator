@@ -15,7 +15,7 @@ Phase 4에서 REJECT 판정된 학습 콘텐츠에 대해 **learning-content-gen
 - `.claude/spec/review/review-rubric.md` — REJECT 처리 정책
 
 ### 절차
-1. REJECT 항목을 수집한다. 각 유닛의 `review.md`을 읽고 **lesson.verdict == REJECT**(레슨 난이도 조정), **problems[].verdict == REJECT**(문제 재생성)를 취합한다.
+1. REJECT 항목을 수집한다. 각 유닛의 `review.md` 맨 위 두 줄을 읽고 취합한다. **reject** 줄의 문제 번호는 문제 재생성 대상이고, **lesson** 줄이 **REJECT**면 레슨 난이도 조정 대상이다. 사유·개선 방향은 같은 파일의 **## p{n}**·**## lesson** 블록에 있다.
 2. 재시도 로그를 생성한다. 아래 **재시도 로그 양식**에 따라 유닛별로, 레슨 블록과 문제 블록을 세션에 유지한다.
    - 문제 단위와 레슨 단위 카운터는 독립된다.
    - 파일로 저장하지 않으며, compaction 및 재시작 시, Phase 5 전체를 재실행한다.
