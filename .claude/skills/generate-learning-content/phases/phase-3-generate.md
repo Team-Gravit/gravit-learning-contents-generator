@@ -8,7 +8,7 @@
 ### 선행 조건
 - **pipeline-state**의 **ID Baseline**이 할당되어 있고, **Checklist**의 이전 Phase가 모두 ✅ 상태이다.
 - 아래 파일이 유닛별로 존재한다.
-  - `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md`
+  - `pipeline-workspace/concept-notes/{unit_id}.md`
   - `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.sql`
 
 ### 참조 파일
@@ -23,7 +23,7 @@
    - **mode** → **"initial"**
    - **unit_id** → 타겟 유닛 ID
    - **label** → **pipeline-state.Meta.labels[unit_id]** (Phase 1에서 발급)
-   - **concept_note_path** → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md`
+   - **concept_note_path** → `pipeline-workspace/concept-notes/{unit_id}.md`
    - **existing_problems_path** → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.sql`
    - **id_allocation** → 이전 단계에서 분할, 배정한 ID 범위
    - **output_path** → `pipeline-workspace/generation-output/{오늘 날짜}/{unit_id}/lesson.sql`

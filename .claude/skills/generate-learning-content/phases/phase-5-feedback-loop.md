@@ -32,7 +32,7 @@ Phase 4에서 REJECT 판정된 학습 콘텐츠에 대해 **learning-content-gen
          - **mode** → **"retry"**
          - **review_path** → `pipeline-workspace/review-output/{오늘 날짜}/{unit_id}/review.md`
          - **lesson_sql_path** → `pipeline-workspace/generation-output/{오늘 날짜}/{unit_id}/lesson.sql`
-         - **concept_note_path** → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md`
+         - **concept_note_path** → `pipeline-workspace/concept-notes/{unit_id}.md`
          - **existing_problems_path** → `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/existing-problems.sql`
      - **learning-content-generator 반환값 확인.** 반환값이 `OK`일 때만 reviewer로 진행한다. 반환값이 `FAIL`(검증기 stderr)이면 재생성 SQL이 무효이므로 reviewer로 넘기지 않고, **같은 인자로 generator를 최대 3회 재호출**해 `OK`를 받을 때까지 시도한다. 이때의 검증기 사유는 Phase 3 step 7과 같은 범주 규칙으로 **Observations**(`phase`=5, `scope`=`-`, `signal`=`VALIDATOR:*`)에 기록한다. 3회 내 `OK`를 못 받으면 해당 항목을 **manual-review**로 태깅한다(사유: `generator 검증 실패`).
      - generator가 `OK`를 반환한 뒤, **learning-content-reviewer**를 아래 인자로 재호출하여 `review.md`를 업데이트한다.

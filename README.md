@@ -57,14 +57,14 @@
     │   ├─ pipeline-state-{날짜}-{seq}.md (IN_PROGRESS) 없음 → Phase 1
     │   └─ 있음 → Checklist에서 미완료 가장 이른 phase를 resume_phase로 결정
     │       └─ resume_phase > 2 → fetch-max-id만 재호출해 ID Baseline 갱신
-    │          (concept-note / existing-problems 캐시는 재사용)
+    │          (concept-notes / existing-problems는 재사용, 최신화 여부 다시 묻지 않음)
     │
     ├─ Phase 1. 계획 수립 (메인 세션)
     │   ├─ 유닛 ID 파싱
     │   └─ pipeline-state-{날짜}-{seq}.md 생성 (Meta + Checklist 초기화)
     │
     ├─ Phase 2. 데이터 수집 (메인 세션)
-    │   ├─ /fetch-cs-note → concept-note.md
+    │   ├─ 개념노트 준비: 없으면 /refresh-concept-note로 받고, 있으면 최신화 여부 질문
     │   ├─ /fetch-existing-learning-contents → existing-problems.sql
     │   ├─ fetch-max-id → ID Baseline 확정
     │   └─ pipeline-state 업데이트
@@ -128,16 +128,16 @@
 │   │   │       └── phase-7-staging-load.md
 │   │   ├── assess-learning-content-quality/
 │   │   │   └── SKILL.md                       ← 실행 단위 종합 채점·감점 원인 연결·스펙 개선 제안
-│   │   ├── fetch-cs-note/
-│   │   │   └── SKILL.md                       ← 유닛 개념노트 조회
 │   │   ├── fetch-existing-learning-contents/
 │   │   │   └── SKILL.md                       ← 유닛의 기존 문제 SQL 수집 (중복 방지용)
 │   │   ├── fetch-max-id/
 │   │   │   └── SKILL.md                       ← lesson/problem/option/answer·staging_label MAX ID 조회
 │   │   ├── open-issue/
 │   │   │   └── SKILL.md                       ← 이슈 템플릿 규격으로 GitHub 이슈 생성
-│   │   └── open-pr/
-│   │       └── SKILL.md                       ← PR 템플릿 규격으로 GitHub PR 생성
+│   │   ├── open-pr/
+│   │   │   └── SKILL.md                       ← PR 템플릿 규격으로 GitHub PR 생성
+│   │   └── refresh-concept-note/
+│   │       └── SKILL.md                       ← 유닛 개념노트를 API에서 받아 concept-notes/ 최신화
 │   ├── hooks/
 │   │   ├── notify-complete.sh                 ← Stop 이벤트: 완료 Webhook 알림
 │   │   └── notify-permission.sh               ← Notification 이벤트: 권한 요청 알림
@@ -164,8 +164,8 @@
 └── pipeline-workspace/                        ← 파이프라인 산출물 (gitignored)
     ├── pipeline-state-{YYYY-MM-DD}-{seq}.md   ← 실행별 상태 추적 파일 (seq = 같은 날 N번째 실행)
     ├── .tokmark-{YYYY-MM-DD}-{seq}            ← Phase 1 토큰 집계 시작 마커 (Phase 7에서 정리)
+    ├── concept-notes/{unit_id}.md             ← 유닛별 개념노트 1장 (날짜 구분 없음, refresh-concept-note로 최신화)
     ├── fetch-cache/{YYYY-MM-DD}/{unit_id}/
-    │   ├── concept-note.md                    ← Phase 2: fetch-cs-note 산출물
     │   └── existing-problems.sql              ← Phase 2: fetch-existing-learning-contents 산출물
     ├── generation-output/{YYYY-MM-DD}/{unit_id}/
     │   └── lesson.sql                         ← Phase 3/5/6: generator + manual-review 최종 SQL

@@ -18,7 +18,7 @@ allowed-tools: Read, Write, Edit, Glob, Bash, Task, Skill
 |---|---|---|
 | 0 | `phases/phase-0-recovery.md` | 오늘 날짜의 **IN_PROGRESS** pipeline-state가 있으면 재개, 없으면 Phase 1. 복구 시 ID Baseline만 재조회 |
 | 1 | `phases/phase-1-planning.md` | 유닛 파싱, pipeline-state 초기화 |
-| 2 | `phases/phase-2-fetch.md` | 개념노트·기존 문제 수집, ID Baseline 확정 (기존 문제·ID Baseline은 캐시 안 씀, 개념노트만 재사용) |
+| 2 | `phases/phase-2-fetch.md` | 개념노트 준비(없으면 받아오고, 있으면 최신화 여부 확인)·기존 문제 수집, ID Baseline 확정 (기존 문제·ID Baseline은 매번 새로 조회) |
 | 3 | `phases/phase-3-generate.md` | 유닛별 generator 서브에이전트 병렬 호출 → 1 lesson씩 생성 |
 | 4 | `phases/phase-4-review.md` | reviewer 서브에이전트로 R1~R6 채점 및 PASS/REJECT 판정 |
 | 5 | `phases/phase-5-feedback-loop.md` | REJECT 재생성 루프 (문제당 최대 3회), 초과 시 manual-review |

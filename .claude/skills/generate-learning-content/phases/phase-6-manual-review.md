@@ -11,7 +11,7 @@ Phase 5까지의 결과에서 **manual-review**로 태깅된 항목을 사용자
 - 현재 실행의 **pipeline-state** 파일 (`pipeline-workspace/pipeline-state-{오늘 날짜}-{seq}.md`) — **Manual Review** 섹션
 - `pipeline-workspace/generation-output/{오늘 날짜}/{unit_id}/lesson.sql` — 수정 대상
 - `pipeline-workspace/review-output/{오늘 날짜}/{unit_id}/review.md` — 마지막 reject 사유·개선 방향 원천
-- `pipeline-workspace/fetch-cache/{오늘 날짜}/{unit_id}/concept-note.md` — 개념 근거
+- `pipeline-workspace/concept-notes/{unit_id}.md` — 개념 근거
 
 ### 절차
 1. **pipeline-state**의 **Manual Review** 항목을 순서대로 수집한다.
